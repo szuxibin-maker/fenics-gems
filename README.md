@@ -41,6 +41,31 @@ Chemistry does not import transport. Transport does not import chemistry. Coupli
 
 The small classes `Chemistry`, `Transport`, and `Output` keep their engine, solver, or open files together. A class here simply groups related data and the functions that use it; there is no inheritance or plugin framework. Read the numbered steps in `coupling.run()` to follow the full calculation.
 
+## Browser tools
+
+Open the HTML files locally in a browser, for example by double-clicking them after downloading or cloning this repository. No Python installation or local server is needed to use the pages. Both include embedded example data; use the file controls to inspect your current files.
+
+### `case_builder.html` — build a `case.yaml`
+
+[GEMS Case Builder](case_builder.html) provides a form for the four configuration sections: chemistry, transport, coupling, and output. It updates a YAML preview as you edit, checks basic input values and loaded chemical names, and lets you **Copy** or **Download** the configuration.
+
+1. Start from the embedded example or use **Import case.yaml** to load an existing basic case.
+2. Under Chemistry, click **Choose GEMS folder** and select the folder containing the project `.lst` and its DCH data (`.json` or text `.dat`). Select the required list file if several are found. The loaded data supplies element, phase, and species names. Check that `chemistry.project` is relative to the location where you will save `case.yaml`.
+3. Set the sample and boundary recipes, temperature, pressure, phases, and optional Gibbs energy overrides. Then set the 1D geometry, porosity, diffusivity, boundaries, solver, calculation mode, time settings, feedback, and output location. Time units selected in the form are converted to seconds in YAML.
+4. Review validation messages and the preview, click **Download**, and place the resulting `case.yaml` beside the Python modules (or in your chosen case folder with suitable paths). Run it separately with `python coupling.py case.yaml` from an environment containing FEniCSx and GEMS.
+
+The page prepares configuration files; it does not run simulations or verify chemical convergence. Its exporter covers the basic single-material diffusion case. Advanced settings such as zones, Darcy flux, outflow boundaries, separate left/right chemical recipes, and warm-start/failure options are not supported by the form and are not reliably preserved on export. Edit those cases directly in YAML. YAML import requires the externally loaded `js-yaml` library to be available; the page reports an error if it cannot load it.
+
+### `gems_inspector.html` — inspect GEMS chemistry data
+
+[GEMS Chemistry Inspector](gems_inspector.html) makes the exported chemical system readable before preparing a case. Click **Open folder…**, **Open files…**, or drag files onto the page. Include the `.lst` and the DCH/IPM files it references; choose the required list file when several are present. JSON (`-j`) and GEMS text (`-t`) exports are supported; binary (`-b`) exports are not.
+
+The tabs show independent components (elements and charge), phases and their species, searchable species properties, and the stoichiometry matrix. Species details include composition, charge, molar mass, and available standard thermodynamic properties. Use the temperature–pressure selector when the DCH contains multiple stored points.
+
+In the **Reactions** tab, enter a reaction using exact, case-sensitive DCH species names, for example `H2O@ = H+ + OH-`. Separate terms with spaces around `+`, and place coefficients before names, such as `2 H2O@`. The page checks element and charge balance and calculates reaction Gibbs energy, enthalpy, entropy, heat capacity, volume, and `log10(K) = -ΔrG° / (R T ln(10))` from the selected DCH data.
+
+The inspector is a read-only data viewer and thermodynamic calculator. The current loader skips DBR state files, so it does not display a solved equilibrium state or run GEMS. Values come from stored DCH points, without interpolation or the in-memory `chemistry.gibbs` overrides in `case.yaml`.
+
 ## The four YAML sections
 
 ```yaml
