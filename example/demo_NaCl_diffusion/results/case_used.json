@@ -1,0 +1,90 @@
+{
+  "chemistry": {
+    "project": "/mnt/c/Users/xi_b/3D Objects/suduko/GEMS-FENICSX/FEniCSx_GEMS_Beginner/example/demo_NaCl_diffusion/chemistry_data/nacl-dat.lst",
+    "temperature": 298.15,
+    "pressure": 100000,
+    "aqueous_phase": "aq_gen",
+    "solid_phases": [],
+    "gibbs": {},
+    "initial": {
+      "high": {
+        "Cl": 0.981277230443145,
+        "H": 108.93820569302314,
+        "Na": 0.981277230443145,
+        "O": 54.46910284651167
+      },
+      "low": {
+        "Cl": 0.4945549500004946,
+        "H": 109.80776318497938,
+        "Na": 0.4945549500004946,
+        "O": 54.90388159248979
+      }
+    },
+    "inlet": {
+      "left": "high",
+      "right": "low"
+    }
+  },
+  "transport": {
+    "geometry": {
+      "length": 0.02,
+      "cells": 200
+    },
+    "material": {
+      "phi": 1.0,
+      "De": 1.6106286393345216e-09
+    },
+    "zones": [
+      {
+        "name": "high",
+        "from": 0.0,
+        "to": 0.01
+      },
+      {
+        "name": "low",
+        "from": 0.01,
+        "to": 0.02
+      }
+    ],
+    "components": [
+      "tracer"
+    ],
+    "initial": {
+      "tracer": 0.0
+    },
+    "boundary": {
+      "left": {
+        "type": "dirichlet",
+        "concentrations": {
+          "tracer": 1.0
+        }
+      },
+      "right": {
+        "type": "dirichlet",
+        "concentrations": {
+          "tracer": 0.0
+        }
+      }
+    },
+    "solver": {
+      "ksp_type": "preonly",
+      "pc_type": "lu",
+      "rtol": 1e-10,
+      "max_iterations": 1000
+    }
+  },
+  "coupling": {
+    "mode": "coupled",
+    "time": {
+      "dt": 1.0,
+      "end": 100.0
+    },
+    "update_porosity": false,
+    "update_diffusivity": false,
+    "exponent": 1.0
+  },
+  "output": {
+    "folder": "/mnt/c/Users/xi_b/3D Objects/suduko/GEMS-FENICSX/FEniCSx_GEMS_Beginner/example/demo_NaCl_diffusion/results",
+    "every": 20
+  }
+}

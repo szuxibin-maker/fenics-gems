@@ -1,0 +1,125 @@
+{
+  "chemistry": {
+    "project": "/mnt/c/Users/xi_b/3D Objects/suduko/GEMS-FENICSX/FEniCSx_GEMS_Beginner/example/demo_cebama/chemistry_data/cem-sol-min-dat.lst",
+    "temperature": 298.15,
+    "pressure": 100000,
+    "aqueous_phase": "aq_gen",
+    "solid_phases": [
+      "CSHExchanger",
+      "OpaExchanger",
+      "Sol"
+    ],
+    "gibbs": {},
+    "start": "warm",
+    "on_failure": "skip",
+    "initial": {
+      "concrete": {
+        "Al": 5.769018338420113e-06,
+        "C": 5.998184869998117e-07,
+        "Ca": 0.018407355518557322,
+        "Cl": 3.9855048970087254e-12,
+        "Cx": 0.09537829363710294,
+        "Fe": 2.1711037926455038e-10,
+        "H": 4.424999084582423,
+        "K": 0.04652515984659221,
+        "Mg": 1.4895825338094897e-08,
+        "Na": 0.014580179546897273,
+        "O": 2.217596700021557,
+        "Opa": 1.0534476533242341e-09,
+        "S": 0.001218568122260417,
+        "Si": 8.053709020630361e-05,
+        "Sol": 959.999038534727,
+        "Sr": 3.9855048970087254e-12,
+        "Tra": 4.006105304484034e-05
+      },
+      "COx": {
+        "Al": 1.5314669710162093e-08,
+        "C": 0.0006862207566290579,
+        "Ca": 0.08680537138220987,
+        "Cl": 0.007389303225150432,
+        "Cx": 1.8010391997982834e-11,
+        "Fe": 0.0005229030095624591,
+        "H": 19.912358743577943,
+        "K": 0.014229816563238087,
+        "Mg": 0.06004064459538015,
+        "Na": 0.07683321985179842,
+        "O": 9.965874344871558,
+        "Opa": 0.37819661944942234,
+        "S": 0.0019888146220874044,
+        "Si": 3.2283363605026156e-05,
+        "Sol": 819.995137194161,
+        "Sr": 0.0021831872180098516,
+        "Tra": 1.8010391996181797e-16
+      }
+    },
+    "inlet": {
+      "right": "COx"
+    }
+  },
+  "transport": {
+    "geometry": {
+      "length": 4.0,
+      "cells": 200
+    },
+    "material": {
+      "phi": 0.18,
+      "De": 2.6e-11
+    },
+    "zones": [
+      {
+        "name": "concrete",
+        "from": 0.0,
+        "to": 0.3,
+        "phi": 0.039999094894668595,
+        "De": 9.99977372366715e-13
+      },
+      {
+        "name": "COx",
+        "from": 0.3,
+        "to": 4.0,
+        "phi": 0.1800049735375947,
+        "De": 2.5920716189413635e-11
+      }
+    ],
+    "components": [
+      "tracer"
+    ],
+    "initial": {
+      "tracer": 0.0
+    },
+    "boundary": {
+      "left": {
+        "type": "no_flux",
+        "concentrations": {
+          "tracer": 0.0
+        }
+      },
+      "right": {
+        "type": "dirichlet",
+        "concentrations": {
+          "tracer": 0.0
+        }
+      }
+    },
+    "solver": {
+      "ksp_type": "preonly",
+      "pc_type": "lu",
+      "rtol": 1e-10,
+      "max_iterations": 1000
+    }
+  },
+  "coupling": {
+    "mode": "coupled",
+    "time": {
+      "dt": 3155760.0,
+      "end": 3155760000.0
+    },
+    "update_porosity": false,
+    "update_diffusivity": false,
+    "exponent": 1.0
+  },
+  "output": {
+    "folder": "/mnt/c/Users/xi_b/3D Objects/suduko/GEMS-FENICSX/FEniCSx_GEMS_Beginner/example/demo_cebama/results",
+    "every": 100
+  }
+}

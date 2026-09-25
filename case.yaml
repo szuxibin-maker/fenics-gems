@@ -1,0 +1,75 @@
+# One input file, four sections matching the four Python files.
+# Run in the WSL fenicsx environment: python coupling.py case.yaml
+
+# 1. chemistry.py: GEMS project, chemical conditions, and recipes.
+chemistry:
+  project: chemistry_data/b_time0-dat.lst
+  temperature: 298.15                  # K
+  pressure: 100000                     # Pa
+  aqueous_phase: aq_gen
+  solid_phases: [CSHQ, Portlandite, Silica-amorph]
+
+  # Example-specific Gibbs energy adjustments (J/mol), applied in memory.
+  # Copied from GEMS_ADE_1D_Template/cement.py; not universal constants.
+  gibbs: {H2O@: -237183.0, Ca+2: -552400.0}
+
+  # Initial element amounts: mol per 1 dm3 BULK, including water and solids.
+  initial:
+    Ca: 1.119218076064
+    Si: 0.31000148638994
+    H: 58.52226105076
+    O: 31.00037832923
+    Cl: 1.0e-15
+
+  # Inlet element amounts: mol per recipe. GEMS supplies its aqueous volume.
+  inlet:
+    Ca: 0.01460
+    Cl: 0.02919801532501
+    H: 111.0167489181
+    O: 55.508741415148
+    Si: 0.000183
+
+# 2. transport.py: geometry, material, boundary conditions, and linear solver.
+transport:
+  geometry:
+    length: 0.004                     # m; uniform 1D mesh
+    cells: 40
+
+  material:
+    phi: 0.5                         # initial porosity
+    De: 5.0e-15                      # initial effective diffusivity, m2/s
+
+  # These tracer settings are used only when coupling.mode is diffusion.
+  # Coupled mode reads element names and initial amounts from chemistry.
+  components: [tracer]
+  initial: {tracer: 0.0}              # mol/m3 pore water
+
+  boundary:
+    left:
+      type: dirichlet
+      concentrations: {tracer: 1.0}   # diffusion mode only; mol/m3 pore water
+    right:
+      type: no_flux
+      concentrations: {tracer: 0.0}   # used only if changed to dirichlet
+  # In coupled mode, every Dirichlet boundary uses chemistry.inlet.
+
+  solver:
+    ksp_type: preonly
+    pc_type: lu
+    rtol: 1.0e-10
+    max_iterations: 1000
+
+# 3. coupling.py: calculation mode, time loop, and reaction feedback.
+coupling:
+  mode: coupled                      # diffusion, chemistry, or coupled
+  time:
+    dt: 3155760                      # s; 0.1 year
+    end: 63115200                    # s; 2 years
+  update_porosity: true
+  update_diffusivity: true
+  exponent: 2.0                      # De = De0 * (phi/phi0)^exponent
+
+# 4. output.py: result location and profile-saving interval.
+output:
+  folder: results/current
+  every: 5                           # save profiles every 5 steps; balances every step

@@ -1,0 +1,78 @@
+# EURAD HERMES cement benchmark (Cement_1D_ReactiveTransport_SNIA_doc.ipynb),
+# reproduced with the four modules in the parent folder.
+# Run from this folder:  python ../../coupling.py case.yaml   (or use the notebook)
+#
+# Benchmark: L = 4 mm, porosity 0.5 (500 g water per dm3 bulk), Dp = 1e-14 m2/s,
+# 25 C, left boundary = Cox-type water (CaCl2, pH ~7.6), right boundary closed,
+# constant porosity and diffusivity, profiles every 100 years up to 1000 years.
+
+# 1. chemistry.py: GEMS project, chemical conditions, and recipes.
+chemistry:
+  project: ../../chemistry_data/b_time0-dat.lst   # relative to this case.yaml
+  temperature: 298.15                  # K (25 C)
+  pressure: 100000                     # Pa
+  aqueous_phase: aq_gen
+  solid_phases: [CSHQ, Portlandite, Silica-amorph]
+
+  # Gibbs energy adjustments used by the benchmark notebook (J/mol).
+  gibbs: {H2O@: -237183.0, Ca+2: -552400.0}
+
+  # Sample: element amounts in mol per 1 dm3 of BULK sample (pore water + solids).
+  # CaO 1.11 mol/dm3 and SiO2 0.31 mol/dm3 hydrated, water scaled to 500 g.
+  initial:
+    Ca: 1.119218076064
+    Si: 0.31000148638994
+    H: 58.52226105076
+    O: 31.00037832923
+    Cl: 1.0e-15
+
+  # Boundary solution: ~1 kg water with 14.6 mM CaCl2 and 0.183 mM Si (pH ~7.6).
+  inlet:
+    Ca: 0.0146
+    Cl: 0.02919801532501
+    H: 111.0167489181
+    O: 55.508741415148
+    Si: 0.000183
+
+# 2. transport.py: geometry, material, boundary conditions, and linear solver.
+transport:
+  geometry:
+    length: 0.004                      # m; 4 mm column
+    cells: 40                          # dx = 0.1 mm, as in the benchmark
+
+  material:
+    phi: 0.5                           # porosity (constant in the benchmark)
+    De: 5.0e-15                        # m2/s; De = phi * Dp = 0.5 * 1e-14
+
+  # Tracer settings are used only when coupling.mode is diffusion.
+  components: [tracer]
+  initial: {tracer: 0.0}               # mol/m3 pore water
+
+  boundary:
+    left:
+      type: dirichlet                  # held at the boundary solution (inlet)
+      concentrations: {tracer: 1.0}    # diffusion mode only
+    right:
+      type: no_flux                    # closed boundary
+      concentrations: {tracer: 0.0}    # used only if changed to dirichlet
+
+  solver:
+    ksp_type: preonly
+    pc_type: lu
+    rtol: 1.0e-10
+    max_iterations: 1000
+
+# 3. coupling.py: calculation mode, time loop, and reaction feedback.
+coupling:
+  mode: coupled
+  time:
+    dt: 3155760                        # s; 36.525 d = 0.1 yr (benchmark step)
+    end: 31557600000                   # s; 365250 d = 1000 yr
+  update_porosity: false               # benchmark keeps porosity constant
+  update_diffusivity: false            # and De constant
+  exponent: 2.0                        # unused while feedback is off
+
+# 4. output.py: result location and profile-saving interval.
+output:
+  folder: results_benchmark
+  every: 1000                          # 1000 x 0.1 yr = a profile every 100 yr

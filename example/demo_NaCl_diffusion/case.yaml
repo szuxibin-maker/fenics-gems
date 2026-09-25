@@ -1,0 +1,83 @@
+# NaCl diffusion between two NaCl solutions (fenics-reaktoro Demos/NaCl_diffusion),
+# with the four modules two folders up (FEniCSx_GEMS_Beginner).
+# Run from this folder:  python ../../coupling.py case.yaml   (or Run.cmd, or the notebook)
+#
+# Original: 20 mm of free solution, 1 M NaCl on the left half, 0.5 M on the right half,
+# both ends held at their initial solution, Nernst-Planck transport, 100 s, dt = 1 s.
+# Here x runs 0..0.02 m (original -0.01..0.01 m), interface at x = 0.01 m.
+
+# 1. chemistry.py: GEMS project, chemical conditions, and recipes.
+chemistry:
+  project: chemistry_data/nacl-dat.lst
+  temperature: 298.15                  # K
+  pressure: 100000                     # Pa
+  aqueous_phase: aq_gen
+  solid_phases: []                     # solution only
+  gibbs: {}
+
+  # Sample per zone: element amounts in mol per 1 dm3 of BULK (= 1 dm3 of solution here).
+  # = the GEMS DBR states nacl (1 M) and naclLOW (0.5 M), scaled to 1 dm3.
+  initial:
+    high:
+      Cl: 0.981277230443145
+      H: 108.93820569302314
+      Na: 0.981277230443145
+      O: 54.46910284651167
+    low:
+      Cl: 0.4945549500004946
+      H: 109.80776318497938
+      Na: 0.4945549500004946
+      O: 54.90388159248979
+
+  # Boundary solutions: each end is held at the pore water of its own zone.
+  inlet: {left: high, right: low}
+
+# 2. transport.py: geometry, material, zones, boundary conditions, and linear solver.
+transport:
+  geometry:
+    length: 0.02                       # m
+    cells: 200                         # dx = 0.1 mm, as the original mesh
+
+  material:
+    phi: 1.0                           # free solution
+    # Binary 1:1 electrolyte: Nernst-Planck with electroneutrality is exactly Fick
+    # with the salt diffusion coefficient D = 2 D_Na D_Cl / (D_Na + D_Cl)
+    # = 2 * 1.334e-9 * 2.032e-9 / (1.334e-9 + 2.032e-9).
+    De: 1.6106286393345216e-09         # m2/s
+
+  zones:
+    - {name: high, from: 0.0, to: 0.01}
+    - {name: low, from: 0.01, to: 0.02}
+
+  # Tracer settings are used only when coupling.mode is diffusion.
+  components: [tracer]
+  initial: {tracer: 0.0}
+
+  boundary:
+    left:
+      type: dirichlet                  # held at zone "high"
+      concentrations: {tracer: 1.0}
+    right:
+      type: dirichlet                  # held at zone "low"
+      concentrations: {tracer: 0.0}
+
+  solver:
+    ksp_type: preonly
+    pc_type: lu
+    rtol: 1.0e-10
+    max_iterations: 1000
+
+# 3. coupling.py: calculation mode, time loop, and reaction feedback.
+coupling:
+  mode: coupled
+  time:
+    dt: 1                              # s
+    end: 100                           # s
+  update_porosity: false
+  update_diffusivity: false
+  exponent: 1.0
+
+# 4. output.py: result location and profile-saving interval.
+output:
+  folder: results
+  every: 20                            # profiles at 0, 20, 40, 60, 80, 100 s

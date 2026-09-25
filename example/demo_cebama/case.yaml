@@ -1,0 +1,112 @@
+# CEBAMA benchmark: low-pH concrete in contact with Callovo-Oxfordian clay rock
+# (fenics-reaktoro Demos/Cebama_Benchmark), with the four modules two folders up.
+# Run from this folder:  python ../../coupling.py case.yaml   (or Run.cmd, or the notebook)
+#
+# Original: 0-40.3 m non-uniform mesh, concrete 0-0.30 m, COx beyond, left closed,
+# right held at COx pore water, one pore diffusion coefficient per material
+# (concrete 2.5e-11, COx 1.44e-10 m2/s; flux = phi * Dp * grad c), dt = 3.154e5 s.
+# Here: uniform 0.02 m cells on 0-4 m (the 100-year front stays within ~1 m),
+# dt = 0.1 year, 100 years; profiles every 10 years (reference data at 10 and 100 y).
+# chemistry.start: warm - each cell restarts GEMS from its own previous equilibrium.
+
+# 1. chemistry.py: GEMS project, chemical conditions, and recipes.
+chemistry:
+  project: chemistry_data/cem-sol-min-dat.lst   # same DCH as COx-sol-min
+  temperature: 298.15                  # K
+  pressure: 100000                     # Pa
+  aqueous_phase: aq_gen
+  solid_phases: [CSHExchanger, OpaExchanger, Sol]
+  gibbs: {}
+  start: warm                          # one GEMS engine per cell, warm restarts (large system)
+  on_failure: skip                     # a cell GEMS cannot solve stays unreacted for that step (reported)
+
+  # Sample per zone: element amounts in mol per 1 dm3 of BULK sample (pore water + solids).
+  # = the GEMS DBR states cem-sol-min (concrete) and COx-sol-min (clay rock), scaled to 1 dm3.
+  initial:
+    concrete:
+      Al: 5.769018338420113e-06
+      C: 5.998184869998117e-07
+      Ca: 0.018407355518557322
+      Cl: 3.9855048970087254e-12
+      Cx: 0.09537829363710294
+      Fe: 2.1711037926455038e-10
+      H: 4.424999084582423
+      K: 0.04652515984659221
+      Mg: 1.4895825338094897e-08
+      Na: 0.014580179546897273
+      O: 2.217596700021557
+      Opa: 1.0534476533242341e-09
+      S: 0.001218568122260417
+      Si: 8.053709020630361e-05
+      Sol: 959.999038534727
+      Sr: 3.9855048970087254e-12
+      Tra: 4.006105304484034e-05
+    COx:
+      Al: 1.5314669710162093e-08
+      C: 0.0006862207566290579
+      Ca: 0.08680537138220987
+      Cl: 0.007389303225150432
+      Cx: 1.8010391997982834e-11
+      Fe: 0.0005229030095624591
+      H: 19.912358743577943
+      K: 0.014229816563238087
+      Mg: 0.06004064459538015
+      Na: 0.07683321985179842
+      O: 9.965874344871558
+      Opa: 0.37819661944942234
+      S: 0.0019888146220874044
+      Si: 3.2283363605026156e-05
+      Sol: 819.995137194161
+      Sr: 0.0021831872180098516
+      Tra: 1.8010391996181797e-16
+
+  # Right end held at the COx pore water.
+  inlet: {right: COx}
+
+# 2. transport.py: geometry, material, zones, boundary conditions, and linear solver.
+transport:
+  geometry:
+    length: 4.0                        # m
+    cells: 200                         # dx = 0.02 m, as the original mesh near the interface
+
+  material:                            # defaults; both zones override them
+    phi: 0.18
+    De: 2.6e-11
+
+  # phi = pore-water volume fraction of each GEMS state; De = phi * Dp.
+  zones:
+    - {name: concrete, from: 0.0, to: 0.30, phi: 0.039999094894668595, De: 9.99977372366715e-13}
+    - {name: COx, from: 0.30, to: 4.0, phi: 0.1800049735375947, De: 2.5920716189413635e-11}
+
+  # Tracer settings are used only when coupling.mode is diffusion.
+  components: [tracer]
+  initial: {tracer: 0.0}
+
+  boundary:
+    left:
+      type: no_flux
+      concentrations: {tracer: 0.0}
+    right:
+      type: dirichlet                  # COx pore water
+      concentrations: {tracer: 0.0}
+
+  solver:
+    ksp_type: preonly
+    pc_type: lu
+    rtol: 1.0e-10
+    max_iterations: 1000
+
+# 3. coupling.py: calculation mode, time loop, and reaction feedback.
+coupling:
+  mode: coupled
+  time:
+    dt: 3155760                        # s; 36.525 d = 0.1 yr
+    end: 3155760000                    # s; 36525 d = 100 yr
+  update_porosity: false               # constant transport properties
+  update_diffusivity: false
+  exponent: 1.0
+
+# 4. output.py: result location and profile-saving interval.
+output:
+  folder: results
+  every: 100                           # 100 x 0.1 yr = a profile every 10 years

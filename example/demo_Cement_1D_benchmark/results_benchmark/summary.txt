@@ -1,0 +1,18 @@
+COMPLETED
+Mode: coupled
+Cells/states: 40; reference length: 0.004 m
+Scheme: backward Euler, DG0 two-point cell flux (transport modes only)
+Linear solver: preonly / lu
+Final time: 31557600000.0 s; steps: 10000
+Amounts: mol/m3 bulk; concentrations: mol/m3 pore water
+Inventory and boundary exchange: mol/m2 (unit cross-sectional area)
+Maximum balance error: 2.657989e-10 mol/m2
+Maximum chemical element reconstruction error: 5.858994e-04 mol/m3
+Maximum aqueous-volume/porosity mismatch: 0.253729%
+GEMS initialisation: independent cold start for every equilibrium call
+Final porosity range: 0.5 to 0.5
+Final De range: 5e-15 to 5e-15 m2/s
+Porosity feedback: False
+Diffusivity feedback: False
+Limit: numerical demonstration, not experimental validation.
+Limit: saturated pore volume is assumed; aqueous volume mismatch is diagnostic only.

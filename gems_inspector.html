@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>GEMS Chemistry Inspector</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#F2F4F3;--surface:#FFFFFF;--surface-2:#E8EDEB;--ink:#17201E;--muted:#5A6764;--line:#D3DBD8;
+  --accent:#13796B;--accent-soft:#D5EDE8;--ok:#2B7A4B;--warn:#A86A12;--fail:#BE3A2B;--info:#35689E;
+  --ph-a:#2F6FA8;--ph-g:#7A7F86;--ph-s:#A0661C;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;
+  --bg:#0F1413;--surface:#161E1D;--surface-2:#1E2928;--ink:#E2E9E7;--muted:#92A19E;--line:#2A3735;
+  --accent:#4CC2AE;--accent-soft:#1B3833;--ok:#5CC38A;--warn:#E0A84A;--fail:#EF6F5E;--info:#78A9DC;
+  --ph-a:#6FA8DC;--ph-g:#A5ABB2;--ph-s:#D9A05A;}}
+:root[data-theme="dark"]{color-scheme:dark;
+  --bg:#0F1413;--surface:#161E1D;--surface-2:#1E2928;--ink:#E2E9E7;--muted:#92A19E;--line:#2A3735;
+  --accent:#4CC2AE;--accent-soft:#1B3833;--ok:#5CC38A;--warn:#E0A84A;--fail:#EF6F5E;--info:#78A9DC;
+  --ph-a:#6FA8DC;--ph-g:#A5ABB2;--ph-s:#D9A05A;}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font:14px/1.5 var(--sans);margin:0}
+.wrap{max-width:1280px;margin:0 auto;padding-inline:20px;padding-block:20px 48px;display:flex;flex-direction:column;gap:16px}
+@media(max-width:600px){.wrap{padding-inline:16px}}
+h1{font-size:22px;font-weight:600;margin:0;letter-spacing:-.01em;text-wrap:balance}
+h2{font-size:15px;font-weight:600;margin:0}
+.mono,code,td.num,.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.label{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:500}
+header.top{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-end;justify-content:space-between}
+.idkey{font-family:var(--mono);font-size:12px;color:var(--muted);white-space:pre-wrap;word-break:break-all}
+button,.btn{font:inherit;font-size:13px;cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:5px;padding:6px 12px}
+button:hover,.btn:hover{border-color:var(--accent)}
+button:focus-visible,input:focus-visible,select:focus-visible,.tab:focus-visible,th:focus-visible,.btn:focus-within{outline:2px solid var(--accent);outline-offset:1px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--bg);font-weight:500}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.source{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 14px}
+.source .grp{display:flex;gap:8px;align-items:center;min-width:0;flex-wrap:wrap}
+.source select{max-width:100%}
+.fchip{font:12px var(--mono);padding:2px 7px;border:1px solid var(--line);border-radius:4px;background:var(--surface-2);word-break:break-all}
+.fchip b{font-weight:500;color:var(--accent);margin-right:4px}
+.fchip.miss{opacity:.55;border-style:dashed;background:none}
+.msg{font-size:12.5px;color:var(--warn)}
+.drop{border:1.5px dashed var(--accent);background:var(--accent-soft);border-radius:8px;padding:10px 14px;font-size:13px;display:none}
+body.dragging .drop{display:block}
+.strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.strip div{background:var(--surface);padding:10px 12px;display:flex;flex-direction:column;gap:2px}
+.strip .v{font:500 16px var(--mono);font-variant-numeric:tabular-nums}
+.strip .u{font-size:11px;color:var(--muted);font-family:var(--sans);margin-left:3px;font-weight:400}
+nav.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);overflow-x:auto}
+.tab{background:none;border:none;border-bottom:2px solid transparent;border-radius:0;padding:8px 14px;color:var(--muted);white-space:nowrap}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent);font-weight:500}
+.tab .cnt{font:11px var(--mono);margin-left:6px;padding:1px 5px;border-radius:8px;background:var(--surface-2)}
+.panel{display:flex;flex-direction:column;gap:14px}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:8px}
+.tblwrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:6px 10px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap;vertical-align:top}
+th{font-weight:500;font-size:12px;color:var(--muted);background:var(--surface-2);position:sticky;top:0;cursor:default}
+th.sortable{cursor:pointer;user-select:none}
+th.sortable:hover{color:var(--ink)}
+th .arr{font-size:10px;margin-left:3px}
+td.num,th.num{text-align:right}
+tbody tr:last-child td{border-bottom:none}
+tbody tr.click{cursor:pointer}
+tbody tr.click:hover td{background:var(--accent-soft)}
+tr.dim td{color:var(--muted)}
+.sub{font-size:11px;color:var(--muted);font-weight:400}
+.pill{display:inline-block;font:500 11px var(--sans);padding:1px 7px;border-radius:10px;border:1px solid currentColor;line-height:1.5}
+.pill.ok{color:var(--ok)}.pill.warn{color:var(--warn)}.pill.fail{color:var(--fail)}.pill.info{color:var(--info)}
+.ph{display:inline-flex;align-items:center;gap:5px}
+.ph i{width:8px;height:8px;border-radius:2px;display:inline-block;background:var(--muted)}
+.ph.a i{background:var(--ph-a)}.ph.g i{background:var(--ph-g)}.ph.s i{background:var(--ph-s)}
+.filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+input[type=search],input[type=text],select{font:inherit;font-size:13px;padding:6px 10px;border:1px solid var(--line);border-radius:5px;background:var(--surface);color:var(--ink)}
+input[type=search]{min-width:0;width:220px;max-width:100%}
+.chipbtn{font-size:12px;padding:3px 10px;border-radius:12px}
+.chipbtn[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--ink)}
+.phases{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
+.phcard{padding:14px;display:flex;flex-direction:column;gap:10px}
+.phcard .hd{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.phcard .name{font-weight:600;font-size:15px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:13px}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0;font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right;word-break:break-word}
+.splist{display:flex;flex-wrap:wrap;gap:5px}
+.sp{font:12px var(--mono);padding:2px 7px;border-radius:4px;background:var(--surface-2);border:1px solid transparent;cursor:pointer;color:var(--ink)}
+.sp:hover{border-color:var(--accent)}
+.sp.zero{opacity:.55}
+.bar{height:4px;background:var(--surface-2);border-radius:2px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent)}
+.mx td{text-align:center;font-family:var(--mono);font-size:12px;min-width:48px}
+.mx td.n{text-align:left;font-family:var(--mono)}
+.mx td.z{color:var(--muted);opacity:.35}
+.mx td.pos{background:color-mix(in srgb,var(--accent) calc(var(--w)*100%),transparent)}
+.mx td.neg{background:color-mix(in srgb,var(--fail) calc(var(--w)*100%),transparent)}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(460px,100%);background:var(--surface);border-left:1px solid var(--line);box-shadow:-12px 0 32px rgba(0,0,0,.14);padding:20px;padding-top:calc(20px + env(safe-area-inset-top,0px));padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));overflow-y:auto;display:flex;flex-direction:column;gap:14px;z-index:10}
+.drawer .hd{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.drawer .big{font:600 20px var(--mono)}
+.formula{font:14px var(--mono)}
+.rx{display:flex;flex-direction:column;gap:12px;padding:14px}
+.rx input[type=text]{width:100%;font-family:var(--mono)}
+.presets{display:flex;flex-wrap:wrap;gap:6px}
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.res div{background:var(--surface);padding:8px 10px}
+.res .v{font:500 15px var(--mono)}
+.note{font-size:12.5px;color:var(--muted);max-width:90ch}
+.err{color:var(--fail);font-size:13px}
+datalist{display:none}
+@media (prefers-reduced-motion:no-preference){.drawer{animation:slide .18s ease-out}@keyframes slide{from{transform:translateX(24px);opacity:.6}}}
+</style>
+
+</head><body>
+<div class="wrap">
+  <header class="top">
+    <div style="display:flex;flex-direction:column;gap:4px;min-width:0">
+      <span class="label">GEMS3K data</span>
+      <h1>GEMS Chemistry Inspector</h1>
+      <div class="idkey" id="idkey"></div>
+    </div>
+    <div class="toolbar">
+      <label class="btn primary" for="dirIn">Open folder…</label>
+      <input type="file" id="dirIn" webkitdirectory directory multiple hidden>
+      <label class="btn" for="fileIn">Open files…</label>
+      <input type="file" id="fileIn" multiple accept=".lst,.json,.dat,.txt" hidden>
+    </div>
+  </header>
+  <div class="source" id="source"></div>
+  <div class="drop">Drop a folder or files. Every *.lst file found is listed, and the DCH and IPM files it names are loaded.</div>
+  <div class="strip" id="strip"></div>
+
+  <nav class="tabs" role="tablist" id="tabs"></nav>
+  <main id="main"></main>
+</div>
+<aside class="drawer" id="drawer" hidden></aside>
+<datalist id="dcnames"></datalist>
+
+<script>
+const DEFAULT = {"label":"chemistry_data/ (embedded copy)","files":{"chemistry_data/b_time0-dat.lst":"-j \"b_time0-dch.json\" \"b_time0-ipm.json\"  \"b_time0-dbr-0-0000.json\"","chemistry_data/b_time0-dch.json":"[\n{\n  \"_key\" : \"b_time0-dch\",\n  \"set\" : \"b_time0\",\n  \"dch\" : {\n    \"nIC\": 6,\n    \"nDC\": 24,\n    \"nPH\": 5,\n    \"nPS\": 3,\n    \"nDCs\": 22,\n    \"nICb\": 6,\n    \"nDCb\": 24,\n    \"nPHb\": 5,\n    \"nPSb\": 3,\n    \"nTp\": 1,\n    \"nPp\": 1,\n    \"iGrd\": 0,\n    \"fAalp\": 1,\n    \"mLook\": 0,\n    \"xic\": [\n        0, 1, 2, 3, 4, 5\n    ],\n    \"xdc\": [\n        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, \n        10, 11, 12, 13, 14, 15, 16, 17, 18, 19, \n        20, 21, 22, 23\n    ],\n    \"xph\": [\n        0, 1, 2, 3, 4\n    ],\n    \"ICNL\": [\n        \"Ca\", \"Cl\", \"H\", \"O\", \"Si\", \"Zz\"\n    ],\n    \"ccIC\": [\n        \"e\", \"e\", \"h\", \"o\", \"e\", \"z\"\n    ],\n    \"ICmm\": [\n        0.0400779991149902, 0.0354529991149902, 0.00100794994831085, 0.015999400138855, 0.0280855007171631, 0\n    ],\n    \"DCNL\": [\n        \"Ca+2\", \"CaOH+\", \"Ca(HSiO3)+\", \"CaSiO3@\", \"HSiO3-\", \"Si4O10-4\", \"SiO2@\", \"SiO3-2\", \"ClO4-\", \"Cl-\", \n        \"H2@\", \"O2@\", \"OH-\", \"H+\", \"H2O@\", \"H2\", \"O2\", \"H2O\", \"CSHQ-JenD\", \"CSHQ-JenH\", \n        \"CSHQ-TobD\", \"CSHQ-TobH\", \"Portlandite\", \"Amor-Sl\"\n    ],\n    \"ccDC\": [\n        \"S\", \"S\", \"S\", \"S\", \"S\", \"S\", \"S\", \"S\", \"S\", \"S\", \n        \"S\", \"S\", \"S\", \"T\", \"W\", \"G\", \"G\", \"G\", \"I\", \"I\", \n        \"I\", \"I\", \"O\", \"O\"\n    ],\n    \"DCmm\": [\n        0.0400779991149902, 0.0570853492021561, 0.117169650197029, 0.116161700248718, 0.0770916510820389, 0.272336004257202, 0.060084300994873, 0.076083701133728, 0.0994505996704102, 0.0354529991149902, \n        0.0020158998966217, 0.03199880027771, 0.0170073500871658, 0.00100794994831085, 0.0180153000354767, 0.0020158998966217, 0.03199880027771, 0.0180153000354767, 0.169212552442741, 0.173886048006892, \n        0.119821407543999, 0.124494053130627, 0.0740926992893219, 0.060084300994873\n    ],\n    \"PHNL\": [\n        \"aq_gen\", \"gas_gen\", \"CSHQ\", \"Portlandite\", \"Silica-amorph\"\n    ],\n    \"ccPH\": [\n        \"a\", \"g\", \"s\", \"s\", \"s\"\n    ],\n    \"nDCinPH\": [\n        15, 3, 4, 1, 1\n    ],\n    \"A\": [\n        1, 0, 0, 0, 0, 2, \n        1, 0, 1, 1, 0, 1, \n        1, 0, 1, 3, 1, 1, \n        1, 0, 0, 3, 1, 0, \n        0, 0, 1, 3, 1, -1, \n        0, 0, 0, 10, 4, -4, \n        0, 0, 0, 2, 1, 0, \n        0, 0, 0, 3, 1, -2, \n        0, 1, 0, 4, 0, -1, \n        0, 1, 0, 0, 0, -1, \n        0, 0, 2, 0, 0, 0, \n        0, 0, 0, 2, 0, 0, \n        0, 0, 1, 1, 0, -1, \n        0, 0, 1, 0, 0, 1, \n        0, 0, 2, 1, 0, 0, \n        0, 0, 2, 0, 0, 0, \n        0, 0, 0, 2, 0, 0, \n        0, 0, 2, 1, 0, 0, \n        1.5, 0, 5, 5.3334, 0.6667, 0, \n        1.3333, 0, 4.3334, 5.5, 1, 0, \n        0.833375, 0, 3.66685, 4.0002, 0.6667, 0, \n        0.6667, 0, 3, 4.1667, 1, 0, \n        1, 0, 2, 2, 0, 0, \n        0, 0, 0, 2, 1, 0\n    ],\n    \"Ttol\": 1,\n    \"TKval\": [\n        298.15\n    ],\n    \"Psat\": [\n        3168.73733474928\n    ],\n    \"Ptol\": 50000,\n    \"Pval\": [\n        100000\n    ],\n    \"denW\": [\n        997.061364306278, \n        -0.25866418191325, \n        -0.00946964566451448, \n        0.0450858902637571, \n        0\n    ],\n    \"denWg\": [\n        0.767104546309221, \n        -0, \n        0, \n        0, \n        0\n    ],\n    \"epsW\": [\n        78.2451456494471, \n        -0.355010888388417, \n        0.00135076186526265, \n        0.00406162824448407, \n        0\n    ],\n    \"epsWg\": [\n        0, \n        0, \n        0, \n        0, \n        0\n    ],\n    \"V0\": [\n        -1.84387418380244e-05, \n        5.76247702545953e-06, \n        -6.73655030024401e-06, \n        0, \n        4.52586740947047e-06, \n        0, \n        1.606330037117e-05, \n        0, \n        4.39042028119618e-05, \n        1.7340894051096e-05, \n        2.52643576113497e-05, \n        3.05008890803284e-05, \n        -4.70784300725686e-06, \n        0, \n        1.80683971876364e-05, \n        0.024789711565, \n        0.024789711565, \n        0.024789711565, \n        8.10000038146973e-05, \n        7.59999990463257e-05, \n        4.80000019073486e-05, \n        5.5e-05, \n        3.30599999427795e-05, \n        2.90000009536743e-05\n    ],\n    \"G0\": [\n        -552790.00065054, \n        -717024.00023652, \n        -1574238.0003068, \n        -1517556.9007465, \n        -1014598.010816, \n        -3600808.0742771, \n        -833411, \n        -938509.90740419, \n        -8535.3605102398, \n        -131290.00076596, \n        17729.00010995, \n        16446.000207431, \n        -157270.00090727, \n        0, \n        -237140.03893356, \n        0, \n        0, \n        -228683, \n        -2169558, \n        -2273986, \n        -1570891, \n        -1668560, \n        -897013, \n        -848903\n    ],\n    \"H0\": [\n        -543068.999361896, \n        -751648.99976801, \n        -1686477.75652809, \n        -1668063.1633423, \n        -1144679.99919977, \n        -3915984.7542771, \n        -887856.17, \n        -1098737.17, \n        -129326.999499664, \n        -167110.999248851, \n        -4018.00010780252, \n        -12237.0002033806, \n        -230008.999110235, \n        0, \n        -285830.098086332, \n        0, \n        0, \n        -242400, \n        -2400703.89199732, \n        -2506255.82023477, \n        -1742413.46613018, \n        -1841496.64882839, \n        -984675, \n        -903348\n    ],\n    \"S0\": [\n        -56.4839968375186, \n        28.0328022458428, \n        -8.32599817558756, \n        -136.683990478516, \n        20.9200054971221, \n        305.197998046875, \n        41.3380012512207, \n        -80.1999969482422, \n        182.004001192221, \n        56.7350438457505, \n        57.738997682742, \n        108.951399378967, \n        -10.7110335158716, \n        0, \n        69.949401641441, \n        130.682998657227, \n        205.136993408203, \n        187.25, \n        173.399993896484, \n        142.5, \n        121.800003051758, \n        89.9000015258789, \n        83.3999862670898, \n        41.3380012512207\n    ],\n    \"Cp0\": [\n        -30.9225151431658, \n        6.04920540984215, \n        137.795712496908, \n        88.9034118652344, \n        -87.1999486422324, \n        328.582641601562, \n        44.4654164359581, \n        119.825927734375, \n        -24.0031594584674, \n        -122.490362897996, \n        166.852112064487, \n        234.132884195387, \n        -136.338084390688, \n        0, \n        75.3605258482016, \n        28.8176721007834, \n        29.3221550499352, \n        40.0719618919943, \n        232.800003051758, \n        207.899993896484, \n        166.899993896484, \n        141.600006103516, \n        87.5053369412958, \n        44.4654164359581\n    ]\n  }\n}\n]","chemistry_data/b_time0-ipm.json":"[\n{\n  \"_key\" : \"b_time0-ipm\",\n  \"set\" : \"b_time0\",\n  \"ipm\" : {\n    \"ID_key\": \"Cement_1D G  b_time0     1    0       1       25      0\",\n    \"pa_PE\": 1,\n    \"PV\": 1,\n    \"PSOL\": 0,\n    \"PAalp\": \"+\",\n    \"PSigm\": \"+\",\n    \"Lads\": 0,\n    \"FIa\": 0,\n    \"FIat\": 0,\n    \"pa_DB\": 1e-17,\n    \"pa_DHB\": 1e-13,\n    \"pa_EPS\": 1e-10,\n    \"pa_DK\": 1e-05,\n    \"pa_DS\": 1e-20,\n    \"pa_DF\": 0.01,\n    \"pa_DFM\": 0.01,\n    \"pa_DP\": 130,\n    \"pa_IIM\": 9999,\n    \"pa_PD\": 2,\n    \"pa_PRD\": -4,\n    \"pa_AG\": 0.7,\n    \"pa_DGC\": -0.0065,\n    \"pa_PSM\": 1,\n    \"pa_GAR\": 1,\n    \"pa_GAH\": 1000,\n    \"pa_XwMin\": 1e-13,\n    \"pa_ScMin\": 1e-13,\n    \"pa_DcMin\": 1e-33,\n    \"pa_PhMin\": 1e-20,\n    \"pa_ICmin\": 1e-05,\n    \"pa_PC\": 2,\n    \"pa_DFYw\": 1e-05,\n    \"pa_DFYaq\": 1e-05,\n    \"pa_DFYid\": 1e-05,\n    \"pa_DFYr\": 1e-05,\n    \"pa_DFYh\": 1e-05,\n    \"pa_DFYc\": 1e-05,\n    \"pa_DFYs\": 1e-06,\n    \"pa_DW\": 1,\n    \"pa_DT\": 0,\n    \"pa_GAS\": 0.001,\n    \"pa_DG\": 1000,\n    \"pa_DNS\": 12.05,\n    \"pa_IEPS\": 0.001,\n    \"pKin\": 1,\n    \"pa_DKIN\": 1e-10,\n    \"pa_PLLG\": 30000,\n    \"tMin\": 0,\n    \"sMod\": [\n        \"HNNSNNNN\", \"INNINNNN\", \"INNINNNN\"\n    ],\n    \"LsMod\": [\n        2, 0, 4, \n        0, 0, 0, \n        0, 0, 0\n    ],\n    \"PMc\": [\n        0.0640000030398369, 4, 1, 1, 4, 0, 0, 0\n    ],\n    \"LsMdc\": [\n        0, 0, 0, \n        0, 0, 0, \n        0, 0, 0\n    ],\n    \"LsMdc2\": [\n        0, 0, 0, \n        0, 0, 0, \n        0, 0, 0\n    ],\n    \"LsPhl\": [\n        0, 0, \n        0, 0, \n        0, 0, \n        0, 0, \n        0, 0\n    ],\n    \"SorMc\": [\n        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, \n        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, \n        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0\n    ],\n    \"LsISmo\": [\n        0, 0, 0, 0, \n        0, 0, 0, 0, \n        0, 0, 0, 0\n    ],\n    \"LsESmo\": [\n        0, 0, 0, 0, \n        0, 0, 0, 0, \n        0, 0, 0, 0\n    ],\n    \"kMod\": [\n        \"NNNNNN\", \"NNNNNN\", \"NNNNNN\", \"NNNNNN\", \"NNNNNN\"\n    ],\n    \"LsKin\": [\n        0, 0, 0, 0, 0, 0, \n        0, 0, 0, 0, 0, 0, \n        0, 0, 0, 0, 0, 0, \n        0, 0, 0, 0, 0, 0, \n        0, 0, 0, 0, 0, 0\n    ],\n    \"PfFact\": [\n        1, \n        1, \n        1, \n        1, \n        1\n    ],\n    \"LsUpt\": [\n        0, 0, \n        0, 0, \n        0, 0\n    ],\n    \"B\": [\n        1.11922, 1e-15, 58.5223, 31.0004, 0.310115, 0\n    ],\n    \"Pparc\": [\n        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, \n        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, \n        1, 1, 1, 1\n    ],\n    \"fDQF\": [\n        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, \n        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, \n        0, 0, 0, 0\n    ],\n    \"lnGmf\": [\n        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, \n        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, \n        0, 0, 0, 0\n    ],\n    \"RLC\": [\n        \"B\", \"B\", \"B\", \"B\", \"B\", \"B\", \"B\", \"B\", \"B\", \"B\", \n        \"B\", \"B\", \"B\", \"B\", \"B\", \"B\", \"B\", \"B\", \"B\", \"B\", \n        \"B\", \"B\", \"B\", \"B\"\n    ],\n    \"RSC\": [\n        \"M\", \"M\", \"M\", \"M\", \"M\", \"M\", \"M\", \"M\", \"M\", \"M\", \n        \"M\", \"M\", \"M\", \"M\", \"M\", \"M\", \"M\", \"M\", \"M\", \"M\", \n        \"M\", \"M\", \"M\", \"M\"\n    ],\n    \"DLL\": [\n        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, \n        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, \n        0, 0, 0, 0\n    ],\n    \"DUL\": [\n        1000000, 1000000, 1000000, 1000000, 1000000, 1000000, 1000000, 1000000, 1000000, 1000000, \n        1000000, 1000000, 1000000, 1000000, 1000000, 1000000, 1000000, 1000000, 1000000, 1000000, \n        1000000, 1000000, 1000000, 1000000\n    ],\n    \"Aalp\": [\n        0, 0, 0, 0, 0\n    ],\n    \"Sigw\": [\n        0, 0, 0, 0, 0\n    ],\n    \"Sigg\": [\n        0, 0, 0, 0, 0\n    ],\n    \"YOF\": [\n        0, 0, 0, 0, 0\n    ],\n    \"dcMod\": [\n        \"HKF\", \"HKF\", \"HKF\", \"K3C\", \"HKF\", \"K3CN\", \"CSCN\", \"K3CN\", \"HKF\", \"HKF\", \n        \"HKF\", \"HKF\", \"HKF\", \"HKF\", \"HWF\", \"CSN\", \"CSN\", \"CSNN\", \"CSCN\", \"CSCN\", \n        \"CSCN\", \"CSCN\", \"CSC\", \"CSCN\"\n    ],\n    \"mui\": [\n        0, 1, 2, 3, 4, 5\n    ],\n    \"muk\": [\n        0, 1, 2, 6, 8\n    ],\n    \"muj\": [\n        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, \n        10, 11, 12, 13, 14, 15, 16, 17, 18, 19, \n        20, 21, 25, 27\n    ]\n  }\n}\n]"}};
+const R = 8.31451, LN10 = Math.LN10;
+const S = { dch:null, ipm:null, dbr:null, names:{}, tab:'elements', sort:{key:'i',dir:1}, phFilter:new Set(), q:'',
+  pool:[], lsts:[], lstIdx:0, tp:0, msgs:[], srcLabel:'' };
+try{ const t=localStorage.getItem('gemsTab2'); if(t) S.tab=t; }catch(e){}
+
+const CC_DC = {S:'aqueous solute',E:'electrolyte',T:'H⁺',W:'water (solvent)',G:'gas',V:'gas (non-ideal)',I:'solid-solution end-member',J:'minor end-member',M:'solid-solution end-member',O:'single-component solid',K:'solid-solution end-member',X:'surface species',Y:'surface species',Z:'surface species',L:'liquid component'};
+const CC_PH = {a:'aqueous',g:'gas',f:'fluid',s:'solid solution / multi-component condensed',l:'liquid',x:'sorption',d:'dispersed'};
+const CC_IC = {e:'element',h:'hydrogen',o:'oxygen',z:'charge',a:'isotope',i:'isotope',v:'vacancy'};
+const SMOD = {H:'Extended Debye–Hückel (Helgeson)',D:'Davies',Y:'Debye–Hückel limiting law',S:'SIT',Z:'Pitzer',I:'Ideal',R:'Redlich–Kister',G:'Guggenheim',F:'Margules',M:'Margules ternary',N:'Ideal (no model)'};
+const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function f(v,d=4){ if(v===null||v===undefined||Number.isNaN(v)) return '—'; if(!isFinite(v)) return v>0?'∞':'−∞'; if(v===0) return '0';
+  const a=Math.abs(v); let s; if(a>=1e6||a<1e-3) s=v.toExponential(d-1).replace('e+','e'); else s=Number(v.toPrecision(d)).toString(); return s.replace('-','−'); }
+function fx(v,d=2){ if(v===null||v===undefined||!isFinite(v)) return '—'; return v.toFixed(d).replace('-','−'); }
+function pill(level,text){ return `<span class="pill ${level}">${text}</span>`; }
+const list = a => a.join(', ');
+const arr = v => v==null ? v : Array.isArray(v) ? v : [v];
+
+/* ---------- parsing GEMS3K files (JSON or key-value text) ---------- */
+const ARRAY_KEYS=new Set('xic xdc xph ICNL ccIC ICmm DCNL ccDC DCmm PHNL ccPH nDCinPH A TKval Pval Psat G0 H0 S0 Cp0 V0 sMod LsMod PMc dcMod B DLL DUL bIC rMB uIC bSP xDC gam dll dul aPH xPH vPS mPS xPA omPH bPS amru amrl RLC RSC Pparc fDQF lnGmf mui muk muj denW epsW'.split(' '));
+function parseKV(txt){
+  const o={}; let key=null;
+  const re=/<([A-Za-z0-9_]+)>|'([^']*)'|"([^"]*)"|#[^\n]*|([^\s<'"#]+)/g; let m;
+  while((m=re.exec(txt))){
+    if(m[1]){ key=m[1]; if(!(key in o)) o[key]=[]; continue; }
+    if(key===null) continue;
+    if(m[2]!==undefined||m[3]!==undefined) o[key].push(m[2]??m[3]);
+    else if(m[4]!==undefined){ const n=Number(m[4]); o[key].push(Number.isNaN(n)?m[4]:n); }
+  }
+  for(const k in o){ if(!ARRAY_KEYS.has(k)){ if(o[k].length===1) o[k]=o[k][0]; else if(o[k].length===0) delete o[k]; } }
+  return o;
+}
+function classify(o){
+  if(o.dch) return ['dch',o.dch]; if(o.ipm) return ['ipm',o.ipm]; if(o.dbr) return ['dbr',o.dbr];
+  if(o.DCNL||o.ICNL) return ['dch',o]; if(o.xDC||o.bIC) return ['dbr',o]; if(o.dcMod||o.sMod||o.pa_DB!==undefined) return ['ipm',o];
+  return [null,o];
+}
+async function readGems(file){
+  const txt=await file.text(); const t=txt.trimStart();
+  let o;
+  if(t[0]==='['||t[0]==='{'){ o=JSON.parse(txt); if(Array.isArray(o)) o=o[0]; }
+  else o=parseKV(txt);
+  return classify(o);
+}
+function parseLst(txt){
+  const fmt=(txt.match(/-([tjb])\b/)||[])[1]||'j';
+  const names=[...txt.matchAll(/"([^"]+)"|'([^']+)'/g)].map(m=>m[1]||m[2]);
+  const bare = names.length?names:txt.replace(/-[a-z]\b/g,'').split(/\s+/).filter(Boolean);
+  return {fmt,names:bare};
+}
+
+/* ---------- file pool (folder / files / drop) ---------- */
+const base = p => p.split(/[\\/]/).pop();
+const dir = p => { const i=Math.max(p.lastIndexOf('/'),p.lastIndexOf('\\')); return i<0?'':p.slice(0,i); };
+function findIn(pool, ref, from){
+  const b=base(ref); const d=dir(from);
+  return pool.find(e=>e.path===(d?d+'/':'')+ref) || pool.find(e=>dir(e.path)===d && base(e.path)===b) || pool.find(e=>base(e.path)===b);
+}
+async function ingest(entries, label){
+  S.pool=entries; S.msgs=[]; S.srcLabel=label;
+  const lstFiles=entries.filter(e=>/\.lst$/i.test(e.path));
+  S.lsts=[];
+  for(const e of lstFiles){
+    const {fmt,names}=parseLst(await e.file.text());
+    if(!names.length){ continue; }
+    S.lsts.push({path:e.path,fmt,names});
+  }
+  S.lsts.sort((a,b)=>a.path.localeCompare(b.path));
+  if(S.lsts.length){ S.lstIdx=0; await loadLst(); }
+  else {
+    // no .lst: load whatever DCH/IPM/DBR files are present
+    const got={dch:null,ipm:null,dbr:[]};
+    for(const e of entries){ if(!/\.(json|dat|txt)$/i.test(e.path)) continue;
+      try{ const [k,o]=await readGems(e.file); if(k&&k!=='dbr'&&!got[k]) got[k]={path:e.path,o}; }catch(err){} }
+    if(!got.dch){ S.msgs.push('No *.lst file and no DCH file found in the selection.'); render(); return; }
+    S.dch=got.dch.o; S.names.dch=got.dch.path; S.ipm=got.ipm?.o||null; S.names.ipm=got.ipm?.path||null;
+    S.msgs.push('No *.lst file found; loaded DCH/IPM files by content.');
+  }
+  render();
+}
+async function loadLst(){
+  const L=S.lsts[S.lstIdx]; S.dch=S.ipm=null; S.names={}; S.tp=0; const miss=[];
+  if(L.fmt==='b') S.msgs.push(`${base(L.path)}: binary (-b) GEMS3K files are not supported; export with -j or -t.`);
+  for(const n of L.names){
+    if(/dbr/i.test(base(n))) continue;
+    const e=findIn(S.pool,n,L.path); if(!e){ miss.push(n); continue; }
+    try{ const [k,o]=await readGems(e.file);
+      if(k==='dbr') continue;
+      else if(k){ S[k]=o; S.names[k]=e.path; }
+      else S.msgs.push(`${n}: not recognised as DCH, IPM or DBR.`);
+    }catch(err){ S.msgs.push(`${n}: ${err.message}`); }
+  }
+  if(miss.length) S.msgs.push(`${base(L.path)} names files that are not in the selection: ${list(miss)}.`);
+}
+async function walkEntry(entry, out){
+  if(entry.isFile){ const file=await new Promise((res,rej)=>entry.file(res,rej)); out.push({path:entry.fullPath.replace(/^\//,''),file}); }
+  else if(entry.isDirectory){ const rd=entry.createReader(); let batch;
+    do{ batch=await new Promise((res,rej)=>rd.readEntries(res,rej)); for(const c of batch) await walkEntry(c,out); }while(batch.length); }
+}
+
+/* ---------- derive model ---------- */
+function gridIndex(d,T,P){
+  const Ts=arr(d.TKval)||[298.15], Ps=arr(d.Pval)||[1e5]; const n=Math.max(Ts.length,1);
+  let best=0, bd=Infinity; for(let i=0;i<n;i++){ const dd=Math.abs((Ts[i]??Ts[0])-T)+Math.abs(((Ps[i]??Ps[0])-P)/1e5); if(dd<bd){bd=dd;best=i;} }
+  return {i:best,n};
+}
+function derive(){
+  const d=S.dch; if(!d) return null;
+  const nIC=d.nIC, nDC=d.nDC, nPH=d.nPH, nPS=d.nPS||0;
+  const IC=arr(d.ICNL), DC=arr(d.DCNL), PH=arr(d.PHNL);
+  const Aflat=arr(d.A); const A=[]; for(let j=0;j<nDC;j++) A.push(Aflat.slice(j*nIC,(j+1)*nIC));
+  const phOf=[]; let k=0;
+  arr(d.nDCinPH).forEach((n,p)=>{ for(let i=0;i<n;i++) phOf[k++]=p; });
+  const Ts=arr(d.TKval)||[298.15], Ps=arr(d.Pval)||[1e5]; const n=Math.max(Ts.length,1);
+  const g={i:Math.min(S.tp,n-1),n}; const T=Ts[g.i]??Ts[0], P=Ps[g.i]??Ps[0];
+  const pick = key => { const a=arr(d[key]); if(!a) return Array(nDC).fill(undefined); if(a.length===nDC) return a; const st=a.length/nDC; return DC.map((_,j)=>a[j*st+g.i]); };
+  const G0=pick('G0'),H0=pick('H0'),S0=pick('S0'),Cp0=pick('Cp0'),V0=pick('V0');
+  const zi = d.ccIC ? arr(d.ccIC).indexOf('z') : IC.indexOf('Zz');
+  const ICmm=arr(d.ICmm), ccDC=arr(d.ccDC), ccPH=arr(d.ccPH), DCmm=arr(d.DCmm);
+  const sp = DC.map((name,j)=>{
+    const row=A[j]; const p=phOf[j];
+    return {i:j,name,cc:ccDC[j],p,phase:PH[p],phcc:ccPH[p],row,
+      z: zi>=0?row[zi]:null, M:DCmm?.[j], mmCalc:row.reduce((s,a,i)=>s+a*ICmm[i],0),
+      G0:G0[j], H0:H0[j], S0:S0[j], Cp0:Cp0[j], V0:V0[j], mod:arr(S.ipm?.dcMod)?.[j] ?? null};
+  });
+  const m={nIC,nDC,nPH,nPS,IC,DC,PH,A,phOf,T,P,zi,sp,grid:g,ICmm,ccPH,nDCinPH:arr(d.nDCinPH)};
+  return m;
+}
+function formula(row,IC,zi){
+  let s=''; row.forEach((a,i)=>{ if(i===zi||a===0) return; s+=IC[i]+(a===1?'':`<sub>${+a.toFixed(5)}</sub>`)+' '; });
+  if(zi>=0 && row[zi]) { const z=row[zi]; s+=`<sup>${Math.abs(z)===1?'':Math.abs(z)}${z>0?'+':'−'}</sup>`; }
+  return s.trim()||'—';
+}
+function equil(m){
+  const b=S.dbr; const x=arr(b.xDC), g=arr(b.gam), u=arr(b.uIC); if(!x||x.length!==m.nDC) return;
+  const RT=R*m.T; const wIdx=m.sp.findIndex(s=>s.cc==='W');
+  const phTot=Array(m.nPH).fill(0); x.forEach((v,j)=>phTot[m.phOf[j]]+=v);
+  const xw = wIdx>=0 ? x[wIdx] : 0;
+  m.waterKg = xw*(m.sp[wIdx]?.M||0.0180153);
+  m.sp.forEach((s,j)=>{
+    s.x=x[j]; s.gam=g?.[j];
+    if(u){ const mu=s.row.reduce((acc,a,i)=>acc+a*u[i],0); const pref=s.phcc==='g'?Math.log(m.P/1e5):0; s.logaEq=(mu - s.G0/RT - pref)/LN10; }
+    let a=null, molal=null;
+    if(s.x>0){
+      if(s.phcc==='a'){
+        if(s.cc==='W') a=s.gam*xw/phTot[s.p];
+        else if(xw>0){ molal=s.x/m.waterKg; a=s.x/xw*55.5084*s.gam; }
+      } else if(m.nDCinPH[s.p]===1){ a=1; }
+      else { a=s.x/phTot[s.p]*s.gam; }
+    }
+    s.molal=molal; s.loga = a===null?null:Math.log10(a);
+  });
+}
+
+/* ---------- rendering ---------- */
+let M=null;
+function render(){
+  M=derive();
+  renderSource(); renderHeader(); renderTabs(); renderMain();
+  if(!document.getElementById('drawer').hidden && S.drawerIdx!=null && M?.sp[S.drawerIdx]) openSpecies(S.drawerIdx); else closeDrawer();
+}
+function renderSource(){
+  const el=document.getElementById('source');
+  const lstSel = S.lsts.length ? `<div class="grp"><span class="label">.lst file</span><select id="lstSel" aria-label="List file">${S.lsts.map((l,i)=>`<option value="${i}" ${i===S.lstIdx?'selected':''}>${esc(l.path)}</option>`).join('')}</select></div>` : '';
+  const Ts=arr(S.dch?.TKval)||[], Ps=arr(S.dch?.Pval)||[];
+  const tpSel = Ts.length>1 ? `<div class="grp"><span class="label">T–P point</span><select id="tpSel" aria-label="Temperature and pressure point">${Ts.map((T,i)=>`<option value="${i}" ${i===S.tp?'selected':''}>${fx(T,2)} K · ${f((Ps[i]??Ps[0])/1e5,4)} bar</option>`).join('')}</select></div>` : '';
+  const chips=['dch','ipm'].map(k=>`<span class="fchip ${S.names[k]?'':'miss'}"><b>${k.toUpperCase()}</b>${esc(S.names[k]?base(S.names[k]):'not loaded')}</span>`).join('');
+  el.innerHTML=`${S.srcLabel?`<div class="grp"><span class="label">Source</span><span class="mono" style="font-size:12px">${esc(S.srcLabel)}</span></div>`:''}${lstSel}${tpSel}<div class="grp">${chips}</div>${S.msgs.map(m=>`<span class="msg">${esc(m)}</span>`).join('')}`;
+}
+function renderHeader(){
+  const b=S.dbr, ip=S.ipm;
+  document.getElementById('idkey').textContent = ip?.ID_key ? String(ip.ID_key).replace(/\s+/g,' ').trim() : (S.dch?'':'Open a folder that contains a GEMS3K *.lst file.');
+  const st=[];
+  if(M){ st.push(['Temperature',fx(M.T,2),'K'],['Pressure',f(M.P/1e5,4),'bar'],['Elements',M.nIC,''],['Species',M.nDC,''],['Phases',M.nPH,''],['Solution phases',M.nPS,'']);
+    if(M.grid.n>1) st.push(['DCH T–P points',M.grid.n,'']); }
+  document.getElementById('strip').innerHTML=st.map(([l,v,u])=>`<div><span class="label">${l}</span><span class="v">${v}<span class="u">${u}</span></span></div>`).join('');
+  document.getElementById('strip').hidden=!st.length;
+  document.getElementById('dcnames').innerHTML=(M?.DC||[]).map(n=>`<option value="${esc(n)}">`).join('');
+}
+const TABS=[['elements','Elements'],['phases','Phases'],['species','Species & thermo'],['matrix','Stoichiometry'],['reaction','Reactions']];
+function renderTabs(){
+  if(!TABS.some(t=>t[0]===S.tab)) S.tab='elements';
+  document.getElementById('tabs').innerHTML=TABS.map(([k,l])=>{
+    let cnt=''; if(M&&k==='elements') cnt=`<span class="cnt">${M.nIC}</span>`; if(M&&k==='phases') cnt=`<span class="cnt">${M.nPH}</span>`; if(M&&k==='species') cnt=`<span class="cnt">${M.nDC}</span>`;
+    return `<button class="tab" role="tab" data-tab="${k}" aria-selected="${S.tab===k}">${l}${cnt}</button>`; }).join('');
+}
+function renderMain(){
+  const el=document.getElementById('main');
+  if(!M){ el.innerHTML=`<div class="box" style="padding:20px">Open a folder (for example <code>chemistry_data</code>). The page finds every <code>*.lst</code> file in it and loads the DCH and IPM files each one lists. You can also pick or drop the files directly.</div>`; return; }
+  el.innerHTML=`<section class="panel">${({elements:vElements,phases:vPhases,species:vSpecies,matrix:vMatrix,reaction:vReaction})[S.tab]()}</section>`;
+  if(S.tab==='reaction') calcReaction();
+  if(S.tab==='species'){ const q=document.getElementById('q'); if(q&&S._focusQ){ q.focus(); q.setSelectionRange(q.value.length,q.value.length); S._focusQ=false; } }
+}
+function vElements(){
+  const d=S.dch, ccIC=arr(d.ccIC);
+  const rows=M.IC.map((n,i)=>{
+    const cls=ccIC?.[i]; const inSp=M.sp.filter(s=>s.row[i]!==0);
+    return `<tr><td class="mono"><b>${esc(n)}</b></td><td>${esc(CC_IC[cls]||cls||'')} <span class="sub">${cls||''}</span></td>
+    <td class="num">${f(M.ICmm[i]*1000,6)}</td><td class="num">${inSp.length}</td>
+    <td style="white-space:normal"><div class="splist">${inSp.map(s=>`<button class="sp" data-sp="${s.i}">${esc(s.name)}</button>`).join('')}</div></td></tr>`; }).join('');
+  return `<div class="tblwrap"><table><thead><tr><th>Element</th><th>Class</th><th class="num">M<br><span class="sub">g/mol</span></th><th class="num">Species<br><span class="sub">count</span></th><th>Species containing it</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+function vPhases(){
+  const b=S.dbr, ip=S.ipm; const xPH=arr(b?.xPH), omPH=arr(b?.omPH), vPS=arr(b?.vPS), mPS=arr(b?.mPS);
+  const maxAmt=Math.max(...(xPH||[1]).map(Math.abs),1e-30);
+  const sMod=arr(ip?.sMod), LsMod=arr(ip?.LsMod), PMc=arr(ip?.PMc);
+  return `<div class="phases">${M.PH.map((n,p)=>{
+    const cc=M.ccPH[p]; const sps=M.sp.filter(s=>s.p===p); const isSol=p<M.nPS;
+    const smod=isSol&&sMod?sMod[p]:null;
+    const kv=[['Species',M.nDCinPH[p]]];
+    if(xPH){ kv.push(['Amount xPH',f(xPH[p],5)+' mol']); if(omPH) kv.push(['Saturation index log Ω',fx(omPH[p],4)]);
+      if(isSol&&vPS){ kv.push(['Volume',f(vPS[p]*1e6,5)+' cm³']); kv.push(['Mass',f(mPS[p]*1000,5)+' g']); } }
+    if(smod) kv.push(['Mixing model',`<span title="${esc(smod)}">${esc(SMOD[smod[0]]||smod)}</span>`]);
+    if(isSol && LsMod && PMc){ const L=LsMod.slice(p*3,p*3+3); if(L[0]*L[2]){ let off=0; for(let q=0;q<p;q++){ const Lq=LsMod.slice(q*3,q*3+3); off+=Lq[0]*Lq[2]; } kv.push(['PMc parameters',PMc.slice(off,off+L[0]*L[2]).map(v=>f(v,3)).join(', ')]); } }
+    const st = !xPH?'' : xPH[p]>0? pill('ok','present') : (omPH?.[p]>1e-6? pill('warn','supersaturated') : pill('info','absent'));
+    return `<div class="box phcard"><div class="hd"><span class="name">${esc(n)}</span>${st}</div>
+      <span class="ph ${cc}"><i></i>${esc(CC_PH[cc]||cc)} <span class="sub">ccPH = ${cc}</span></span>
+      ${xPH?`<div class="bar" title="Amount relative to the largest phase"><i style="width:${Math.max(0,Math.min(100,xPH[p]/maxAmt*100))}%"></i></div>`:''}
+      <dl class="kv">${kv.map(([k,v])=>`<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>
+      <div class="splist">${sps.map(s=>`<button class="sp ${b&&!(s.x>0)?'zero':''}" data-sp="${s.i}" title="${esc(CC_DC[s.cc]||s.cc)}${s.x!=null?' · x = '+f(s.x,4)+' mol':''}">${esc(s.name)}</button>`).join('')}</div></div>`; }).join('')}</div>`;
+}
+const SPCOLS=[['i','#',1],['name','Species',0],['phase','Phase',0],['cc','Class',0],['formula','Formula',0],['z','Charge',1],['M','M|g/mol',1],['G0','G°|kJ/mol',1],['H0','H°|kJ/mol',1],['S0','S°|J/(mol·K)',1],['Cp0','Cp°|J/(mol·K)',1],['V0','V°|cm³/mol',1],['mod','Model',0],['x','x|mol',1],['molal','m|mol/kg',1],['gam','γ',1],['loga','log a',1],['logaEq','log a*|equilibrium',1]];
+function vSpecies(){
+  const b=S.dbr; const q=S.q.toLowerCase();
+  let rows=M.sp.filter(s=>(!S.phFilter.size||S.phFilter.has(s.p)) && (!q || s.name.toLowerCase().includes(q) || s.phase.toLowerCase().includes(q)));
+  const {key,dir}=S.sort;
+  rows.sort((a,c)=>{ let va=a[key], vc=c[key]; if(key==='formula'){va=a.name;vc=c.name;}
+    if(va==null&&vc==null) return 0; if(va==null) return 1; if(vc==null) return -1;
+    if(typeof va==='string') return dir*va.localeCompare(vc); return dir*(va-vc); });
+  const cols=SPCOLS.filter(c=>(b || !['x','molal','gam','loga','logaEq'].includes(c[0])) && (S.ipm || c[0]!=='mod'));
+  const head=cols.map(([k,l,num])=>{ const [a,u]=l.split('|'); return `<th class="sortable ${num?'num':''}" tabindex="0" data-sort="${k}">${a}${u?`<br><span class="sub">${u}</span>`:''}${S.sort.key===k?`<span class="arr">${S.sort.dir>0?'▲':'▼'}</span>`:''}</th>`; }).join('');
+  const cell=(s,k)=>{ switch(k){
+    case 'i': return `<td class="num muted">${s.i}</td>`;
+    case 'name': return `<td class="mono"><b>${esc(s.name)}</b></td>`;
+    case 'phase': return `<td><span class="ph ${s.phcc}"><i></i>${esc(s.phase)}</span></td>`;
+    case 'cc': return `<td title="${esc(CC_DC[s.cc]||'')}"><span class="mono">${s.cc}</span> <span class="sub">${esc(CC_DC[s.cc]||'')}</span></td>`;
+    case 'formula': return `<td class="formula">${formula(s.row,M.IC,M.zi)}</td>`;
+    case 'z': return `<td class="num">${s.z??'—'}</td>`;
+    case 'M': return `<td class="num">${f(s.M*1000,6)}</td>`;
+    case 'G0': return `<td class="num">${fx(s.G0/1000,3)}</td>`;
+    case 'H0': return `<td class="num">${fx(s.H0/1000,3)}</td>`;
+    case 'S0': return `<td class="num">${fx(s.S0,2)}</td>`;
+    case 'Cp0': return `<td class="num">${fx(s.Cp0,2)}</td>`;
+    case 'V0': return `<td class="num">${f(s.V0*1e6,5)}</td>`;
+    case 'mod': return `<td class="mono">${esc(s.mod??'—')}</td>`;
+    case 'x': return `<td class="num">${f(s.x,4)}</td>`;
+    case 'molal': return `<td class="num">${s.molal==null?'—':f(s.molal,4)}</td>`;
+    case 'gam': return `<td class="num">${f(s.gam,4)}</td>`;
+    case 'loga': return `<td class="num">${s.loga==null?'—':fx(s.loga,3)}</td>`;
+    case 'logaEq': return `<td class="num">${fx(s.logaEq,3)}</td>`;
+  }};
+  return `<div class="filters"><input type="search" id="q" placeholder="Search species or phase" value="${esc(S.q)}" aria-label="Search">
+    ${M.PH.map((n,p)=>`<button class="chipbtn" data-ph="${p}" aria-pressed="${S.phFilter.has(p)}"><span class="ph ${M.ccPH[p]}"><i></i>${esc(n)}</span></button>`).join('')}
+    <span class="muted" style="font-size:12px">${rows.length} of ${M.nDC} species · click a row for details</span></div>
+  <div class="tblwrap"><table><thead><tr>${head}</tr></thead><tbody>${rows.map(s=>`<tr class="click ${b&&!(s.x>0)?'dim':''}" data-sp="${s.i}">${cols.map(c=>cell(s,c[0])).join('')}</tr>`).join('')}</tbody></table></div>
+  <p class="note">G° is the apparent Gibbs energy of formation at T and P, H° the apparent enthalpy of formation, S° and Cp° the absolute (partial molal) entropy and heat capacity; V° is shown in cm³/mol.${M.grid.n>1?` Values are for DCH grid point ${M.grid.i+1} of ${M.grid.n}; change it in the T–P selector above.`:''}${b?' log a* is the activity implied by the DBR dual potentials; for an absent pure solid it equals its saturation index.':''}</p>`;
+}
+function vMatrix(){
+  const mx=Math.max(...M.sp.flatMap(s=>s.row.map(Math.abs)),1);
+  return `<div class="tblwrap"><table class="mx"><thead><tr><th>Species</th><th>Phase</th>${M.IC.map(n=>`<th class="num" style="text-align:center">${esc(n)}</th>`).join('')}</tr></thead>
+  <tbody>${M.sp.map(s=>`<tr class="click" data-sp="${s.i}"><td class="n"><b>${esc(s.name)}</b></td><td><span class="ph ${s.phcc}"><i></i>${esc(s.phase)}</span></td>${s.row.map(a=>`<td class="${a===0?'z':a>0?'pos':'neg'}" style="--w:${(0.12+0.5*Math.abs(a)/mx).toFixed(3)}">${a===0?'·':+a.toFixed(5)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
+  <p class="note">Each row of the A matrix is one species' formula, one column per element (Zz is charge).</p>`;
+}
+function presets(){
+  const has=n=>M.DC.includes(n);
+  const P=['Portlandite + 2 H+ = Ca+2 + 2 H2O@','H2O@ = H+ + OH-','Amor-Sl = SiO2@','CaOH+ + H+ = Ca+2 + H2O@','SiO2@ + H2O@ = HSiO3- + H+','Calcite + H+ = Ca+2 + HCO3-','Gypsum = Ca+2 + SO4-2 + 2 H2O@'];
+  return P.filter(r=>r.split(/\s+\+\s+|\s*=\s*/).every(t=>{ const m=t.trim().match(/^(\d*\.?\d+\s+)?(.+)$/); return has(m[2]); }));
+}
+function vReaction(){
+  const P=presets(); if(S.rx==null) S.rx=P[0]||'';
+  return `<div class="box rx"><div><h2>Reaction thermodynamics</h2><p class="note" style="margin:4px 0 0">Write the reaction with species names from the loaded DCH. Put spaces around “+” and write coefficients before names (e.g. <code>2 H2O@</code>). The result gives ΔrG°, ΔrH°, ΔrS°, ΔrCp°, ΔrV° and log K at the current T and P.</p></div>
+    <input type="text" id="rxIn" list="dcnames" value="${esc(S.rx)}" spellcheck="false" autocomplete="off" aria-label="Reaction">
+    ${P.length?`<div class="presets">${P.map(p=>`<button class="chipbtn" data-rx="${esc(p)}">${esc(p)}</button>`).join('')}</div>`:''}
+    <div id="rxOut"></div></div>`;
+}
+function parseSide(str){
+  return str.split(/\s+\+\s+/).map(t=>t.trim()).filter(Boolean).map(t=>{
+    if(M.DC.includes(t)) return {nu:1,name:t};
+    const r=t.match(/^(\d*\.?\d+)\s*(.+)$/); if(r && M.DC.includes(r[2])) return {nu:+r[1],name:r[2]};
+    return {nu:1,name:t,bad:true}; });
+}
+function calcReaction(){
+  const out=document.getElementById('rxOut'); const s=S.rx||'';
+  if(!s.trim()){ out.innerHTML=''; return; }
+  const parts=s.split(/\s*=\s*/); if(parts.length!==2){ out.innerHTML=`<p class="err">The reaction needs exactly one “=”.</p>`; return; }
+  const L=parseSide(parts[0]).map(o=>({...o,nu:-o.nu})), Rr=parseSide(parts[1]);
+  const all=[...L,...Rr]; const bad=all.filter(o=>o.bad);
+  if(bad.length){ out.innerHTML=`<p class="err">Species not found: ${list(bad.map(o=>esc(o.name)))}. Names are case-sensitive; pick from the suggestions in the input box.</p>`; return; }
+  const sp=o=>M.sp[M.DC.indexOf(o.name)];
+  const sum=k=>all.reduce((a,o)=>a+o.nu*(sp(o)[k]??NaN),0);
+  const dG=sum('G0'), dH=sum('H0'), dS=sum('S0'), dCp=sum('Cp0'), dV=sum('V0');
+  const T=M.T, logK=-dG/(R*T*LN10);
+  const bal=M.IC.map((n,i)=>({n,v:all.reduce((a,o)=>a+o.nu*sp(o).row[i],0)})).filter(o=>Math.abs(o.v)>1e-6);
+  let q='';
+  if(S.dbr && M.sp[0].logaEq!==undefined){ const logQ=all.reduce((a,o)=>{ const s1=sp(o); return a+o.nu*(s1.loga??s1.logaEq); },0);
+    q=`<div><span class="label">log Q (DBR activities)</span><div class="v">${fx(logQ,3)}</div></div><div><span class="label">log(Q/K)</span><div class="v">${fx(logQ-logK,4)}</div></div>`; }
+  out.innerHTML=`<div style="display:flex;flex-direction:column;gap:10px">
+   <div>${bal.length?pill('fail','Unbalanced')+' <span class="err">'+bal.map(o=>`${o.n}: ${+o.v.toFixed(6)}`).join(', ')+'</span>':pill('ok','Elements and charge balanced')}</div>
+   <div class="res">
+    <div><span class="label">log K (${fx(T,2)} K)</span><div class="v">${fx(logK,4)}</div></div>
+    <div><span class="label">ΔrG°</span><div class="v">${fx(dG/1000,3)} <span class="sub">kJ/mol</span></div></div>
+    <div><span class="label">ΔrH°</span><div class="v">${fx(dH/1000,3)} <span class="sub">kJ/mol</span></div></div>
+    <div><span class="label">ΔrS°</span><div class="v">${fx(dS,2)} <span class="sub">J/(mol·K)</span></div></div>
+    <div><span class="label">ΔrCp°</span><div class="v">${fx(dCp,2)} <span class="sub">J/(mol·K)</span></div></div>
+    <div><span class="label">ΔrV°</span><div class="v">${f(dV*1e6,4)} <span class="sub">cm³/mol</span></div></div>${q}
+   </div></div>`;
+}
+
+/* ---------- drawer ---------- */
+function openSpecies(j){
+  S.drawerIdx=j; const s=M.sp[j]; const dr=document.getElementById('drawer'); const b=S.dbr; const ip=S.ipm;
+  const kv=[['Phase',`<span class="ph ${s.phcc}"><i></i>${esc(s.phase)}</span>`],['Class ccDC',`${s.cc} · ${esc(CC_DC[s.cc]||'')}`],['Thermo model dcMod',esc(s.mod??'—')],['Charge',s.z],['Molar mass',f(s.M*1000,7)+' g/mol'],
+    ['G°',fx(s.G0,1)+' J/mol'],['H°',fx(s.H0,1)+' J/mol'],['S°',fx(s.S0,3)+' J/(mol·K)'],['Cp°',fx(s.Cp0,3)+' J/(mol·K)'],['V°',f(s.V0*1e6,6)+' cm³/mol'],['G°/RT',fx(s.G0/(R*M.T),4)]];
+  if(b){ kv.push(['Amount x',f(s.x,6)+' mol'],['Molality',s.molal==null?'—':f(s.molal,5)+' mol/kg'],['Activity coefficient γ',f(s.gam,6)],['log a',s.loga==null?'—':fx(s.loga,4)],['log a* (equilibrium)',fx(s.logaEq,4)]); }
+  dr.innerHTML=`<div class="hd"><div><span class="label">Species #${s.i}</span><div class="big">${esc(s.name)}</div><div class="formula">${formula(s.row,M.IC,M.zi)}</div></div><button id="closeDr" aria-label="Close">Close</button></div>
+    <dl class="kv">${kv.map(([k,v])=>`<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>
+    <div><span class="label">Stoichiometry (row of A)</span><div class="tblwrap" style="margin-top:6px"><table><thead><tr>${M.IC.map(n=>`<th class="num">${esc(n)}</th>`).join('')}</tr></thead><tbody><tr>${s.row.map(a=>`<td class="num">${+a.toFixed(6)}</td>`).join('')}</tr></tbody></table></div></div>
+    <div><span class="label">Other species in this phase</span><div class="splist" style="margin-top:6px">${M.sp.filter(o=>o.p===s.p&&o.i!==s.i).map(o=>`<button class="sp" data-sp="${o.i}">${esc(o.name)}</button>`).join('')||'<span class="muted">None</span>'}</div></div>`;
+  dr.hidden=false;
+}
+function closeDrawer(){ document.getElementById('drawer').hidden=true; S.drawerIdx=null; }
+
+/* ---------- events ---------- */
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-tab],[data-sp],[data-sort],[data-ph],[data-rx],#closeDr'); if(!t) return;
+  if(t.id==='closeDr') return closeDrawer();
+  if(t.dataset.tab){ S.tab=t.dataset.tab; try{localStorage.setItem('gemsTab2',S.tab)}catch(e){} renderTabs(); renderMain(); return; }
+  if(t.dataset.sp!==undefined){ openSpecies(+t.dataset.sp); return; }
+  if(t.dataset.sort){ const k=t.dataset.sort; S.sort = S.sort.key===k?{key:k,dir:-S.sort.dir}:{key:k,dir:1}; renderMain(); return; }
+  if(t.dataset.ph!==undefined){ const p=+t.dataset.ph; S.phFilter.has(p)?S.phFilter.delete(p):S.phFilter.add(p); renderMain(); return; }
+  if(t.dataset.rx){ S.rx=t.dataset.rx; renderMain(); return; }
+});
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeDrawer(); if((e.key==='Enter'||e.key===' ')&&e.target.dataset?.sort){ e.preventDefault(); e.target.click(); } });
+document.addEventListener('input',e=>{
+  if(e.target.id==='q'){ S.q=e.target.value; S._focusQ=true; renderMain(); }
+  if(e.target.id==='rxIn'){ S.rx=e.target.value; calcReaction(); }
+});
+document.addEventListener('change',async e=>{
+  if(e.target.id==='lstSel'){ S.lstIdx=+e.target.value; S.msgs=[]; S.phFilter.clear(); S.rx=null; await loadLst(); render(); }
+  if(e.target.id==='tpSel'){ S.tp=+e.target.value; render(); }
+});
+function reset(){ S.dch=S.ipm=S.dbr=null; S.names={}; S.lsts=[]; S.tp=0; S.phFilter.clear(); S.rx=null; }
+document.getElementById('dirIn').addEventListener('change',e=>{ const fs=[...e.target.files]; if(!fs.length) return;
+  const root=(fs[0].webkitRelativePath||'').split('/')[0];
+  reset(); ingest(fs.map(f=>({path:f.webkitRelativePath||f.name,file:f})), root?root+'/':'selected folder'); e.target.value=''; });
+document.getElementById('fileIn').addEventListener('change',e=>{ const fs=[...e.target.files]; if(!fs.length) return;
+  reset(); ingest(fs.map(f=>({path:f.name,file:f})), `${fs.length} file${fs.length>1?'s':''}`); e.target.value=''; });
+let dragN=0;
+window.addEventListener('dragenter',e=>{ e.preventDefault(); dragN++; document.body.classList.add('dragging'); });
+window.addEventListener('dragleave',e=>{ dragN--; if(dragN<=0){dragN=0;document.body.classList.remove('dragging');} });
+window.addEventListener('dragover',e=>e.preventDefault());
+window.addEventListener('drop',async e=>{ e.preventDefault(); dragN=0; document.body.classList.remove('dragging');
+  const items=[...(e.dataTransfer?.items||[])].map(i=>i.webkitGetAsEntry?.()).filter(Boolean);
+  let out=[];
+  if(items.length){ for(const en of items) await walkEntry(en,out); }
+  else out=[...(e.dataTransfer?.files||[])].map(f=>({path:f.name,file:f}));
+  if(!out.length) return;
+  const label = items.length===1&&items[0].isDirectory ? items[0].name+'/' : `${out.length} dropped file${out.length>1?'s':''}`;
+  reset(); ingest(out,label); });
+
+/* ---------- start with the embedded example ---------- */
+(async()=>{
+  if(DEFAULT){
+    const mk=(p,txt)=>({path:p,file:new File([txt],p.split('/').pop())});
+    const entries=Object.entries(DEFAULT.files).map(([p,t])=>mk(p,t));
+    await ingest(entries, DEFAULT.label);
+  } else render();
+})();
+</script>
+
+</body></html>

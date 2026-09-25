@@ -1,0 +1,81 @@
+{
+  "chemistry": {
+    "project": "/mnt/c/Users/xi_b/3D Objects/suduko/GEMS-FENICSX/FEniCSx_GEMS_Beginner/chemistry_data/b_time0-dat.lst",
+    "temperature": 298.15,
+    "pressure": 100000.0,
+    "aqueous_phase": "aq_gen",
+    "solid_phases": [
+      "CSHQ",
+      "Portlandite",
+      "Silica-amorph"
+    ],
+    "gibbs": {
+      "H2O@": -237183.0,
+      "Ca+2": -552400.0
+    },
+    "initial": {
+      "Ca": 1.119218076064,
+      "Si": 0.31000148638994,
+      "H": 58.52226105076,
+      "O": 31.00037832923,
+      "Cl": 1e-15
+    },
+    "inlet": {
+      "Ca": 0.0146,
+      "Cl": 0.02919801532501,
+      "H": 111.0167489181,
+      "O": 55.508741415148,
+      "Si": 0.000183
+    }
+  },
+  "transport": {
+    "geometry": {
+      "length": 0.004,
+      "cells": 40
+    },
+    "material": {
+      "phi": 0.5,
+      "De": 5e-15
+    },
+    "components": [
+      "tracer"
+    ],
+    "initial": {
+      "tracer": 0.0
+    },
+    "boundary": {
+      "left": {
+        "type": "dirichlet",
+        "concentrations": {
+          "tracer": 1.0
+        }
+      },
+      "right": {
+        "type": "no_flux",
+        "concentrations": {
+          "tracer": 0.0
+        }
+      }
+    },
+    "solver": {
+      "ksp_type": "preonly",
+      "pc_type": "lu",
+      "rtol": 1e-10,
+      "max_iterations": 1000
+    }
+  },
+  "coupling": {
+    "mode": "coupled",
+    "time": {
+      "dt": 3155760.0,
+      "end": 31557600000.0
+    },
+    "update_porosity": false,
+    "update_diffusivity": false,
+    "exponent": 2.0
+  },
+  "output": {
+    "folder": "/mnt/c/Users/xi_b/3D Objects/suduko/GEMS-FENICSX/FEniCSx_GEMS_Beginner/example/demo_Cement_1D_benchmark/results_benchmark",
+    "every": 1000
+  }
+}

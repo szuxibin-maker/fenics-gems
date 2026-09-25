@@ -1,0 +1,82 @@
+# Bench5 / Benchmark 4: MgCl2 injection into a calcite column (paper s10596-019-09919-3, 4.4, Fig. 6),
+# reproduced with the four modules two folders up (FEniCSx_GEMS_Beginner).
+# Run from this folder:  python ../../coupling.py case.yaml   (or Run.cmd, or the notebook)
+#
+# 0.5 m column, porosity 0.32, pore velocity 9.375e-6 m/s, D = 2.01e-8 m2/s,
+# MgCl2 (Mg 1, Cl 2 mol/m3 water) enters on the left, advective outflow on the right,
+# calcite dissolves, dolomite forms in a moving band. dt = 200 s, end = 21000 s.
+
+# 1. chemistry.py: GEMS project, chemical conditions, and recipes.
+chemistry:
+  project: chemistry_data/ic-independent-dat.lst   # C-Ca-Cl-H-Mg-Zz basis, calcite lower limit removed
+  temperature: 298.15                  # K
+  pressure: 100000                     # Pa
+  aqueous_phase: aq_gen
+  solid_phases: [Calcite, Dolomite-dis]
+
+  # No Gibbs energy adjustments in this benchmark.
+  gibbs: {}
+
+  # Sample: element amounts in mol per 1 dm3 of BULK sample (pore water + solids).
+  # = the GEMS DBR state (1 L water in equilibrium with calcite, pH 9.9) scaled by
+  #   0.3190604 so that 1 dm3 bulk holds 0.32 dm3 pore water (porosity 0.32).
+  #   No O: water is H2 in this independent-component basis.
+  initial:
+    C: 0.00010461989544030905
+    Ca: 0.00010461989544030905
+    Cl: 6.381207407155173e-16
+    H: 35.421044304502
+    Mg: 3.1906037035775866e-16
+
+  # Boundary solution: ~1 L water with Mg 1 and Cl 2 mol/m3 water (MgCl2).
+  # C and Ca at 1e-9 mol: the "empty" floor used by the Bench5 notebook, keeps GEMS well-posed.
+  inlet:
+    C: 1.0e-9
+    Ca: 1.0e-9
+    Cl: 0.00200588998026416
+    H: 111.016746657646
+    Mg: 0.00100294499013208
+
+# 2. transport.py: geometry, material, boundary conditions, and linear solver.
+transport:
+  geometry:
+    length: 0.5                        # m
+    cells: 1000                        # dx = 0.5 mm; upwind needs a fine mesh (see notebook)
+
+  material:
+    phi: 0.32                          # porosity, constant
+    De: 6.432e-09                      # m2/s; De = phi * D = 0.32 * 2.01e-8
+    darcy_flux: 3.0e-06                # m/s; q = phi * v = 0.32 * 9.375e-6, flow towards +x
+
+  # Tracer settings are used only when coupling.mode is diffusion.
+  components: [tracer]
+  initial: {tracer: 0.0}               # mol/m3 pore water
+
+  boundary:
+    left:
+      type: dirichlet                  # inflow of the boundary solution (inlet)
+      concentrations: {tracer: 1.0}    # diffusion mode only
+    right:
+      type: outflow                    # advective outflow, zero dispersive gradient
+      concentrations: {tracer: 0.0}    # used only if changed to dirichlet
+
+  solver:
+    ksp_type: preonly
+    pc_type: lu
+    rtol: 1.0e-10
+    max_iterations: 1000
+
+# 3. coupling.py: calculation mode, time loop, and reaction feedback.
+coupling:
+  mode: coupled
+  time:
+    dt: 200                            # s
+    end: 21000                         # s; 105 steps (paper Fig. 6)
+  update_porosity: false               # transport porosity fixed at 0.32
+  update_diffusivity: false
+  exponent: 2.0                        # unused while feedback is off
+
+# 4. output.py: result location and profile-saving interval.
+output:
+  folder: results
+  every: 21                            # a profile every 4200 s: 0, 4200, ..., 21000 s

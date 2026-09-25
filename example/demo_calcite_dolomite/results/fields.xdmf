@@ -1,0 +1,366 @@
+<?xml version="1.0"?>
+<!DOCTYPE Xdmf SYSTEM "Xdmf.dtd" []>
+<Xdmf Version="3.0" xmlns:xi="https://www.w3.org/2001/XInclude">
+  <Domain>
+    <Grid Name="mesh" GridType="Uniform">
+      <Topology TopologyType="PolyLine" NumberOfElements="1000" NodesPerElement="2">
+        <DataItem Dimensions="1000 2" NumberType="Int" Format="HDF">fields.h5:/Mesh/mesh/topology</DataItem>
+      </Topology>
+      <Geometry GeometryType="XY">
+        <DataItem Dimensions="1001 2" Format="HDF">fields.h5:/Mesh/mesh/geometry</DataItem>
+      </Geometry>
+    </Grid>
+    <Grid Name="C_c_mol_m3_water" GridType="Collection" CollectionType="Temporal">
+      <Grid Name="C_c_mol_m3_water" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="0" />
+        <Attribute Name="C_c_mol_m3_water" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/C_c_mol_m3_water/0</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="C_c_mol_m3_water" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="4200" />
+        <Attribute Name="C_c_mol_m3_water" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/C_c_mol_m3_water/4200</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="C_c_mol_m3_water" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="8400" />
+        <Attribute Name="C_c_mol_m3_water" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/C_c_mol_m3_water/8400</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="C_c_mol_m3_water" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="12600" />
+        <Attribute Name="C_c_mol_m3_water" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/C_c_mol_m3_water/12600</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="C_c_mol_m3_water" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="16800" />
+        <Attribute Name="C_c_mol_m3_water" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/C_c_mol_m3_water/16800</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="C_c_mol_m3_water" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="21000" />
+        <Attribute Name="C_c_mol_m3_water" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/C_c_mol_m3_water/21000</DataItem>
+        </Attribute>
+      </Grid>
+    </Grid>
+    <Grid Name="Ca_c_mol_m3_water" GridType="Collection" CollectionType="Temporal">
+      <Grid Name="Ca_c_mol_m3_water" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="0" />
+        <Attribute Name="Ca_c_mol_m3_water" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/Ca_c_mol_m3_water/0</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="Ca_c_mol_m3_water" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="4200" />
+        <Attribute Name="Ca_c_mol_m3_water" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/Ca_c_mol_m3_water/4200</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="Ca_c_mol_m3_water" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="8400" />
+        <Attribute Name="Ca_c_mol_m3_water" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/Ca_c_mol_m3_water/8400</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="Ca_c_mol_m3_water" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="12600" />
+        <Attribute Name="Ca_c_mol_m3_water" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/Ca_c_mol_m3_water/12600</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="Ca_c_mol_m3_water" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="16800" />
+        <Attribute Name="Ca_c_mol_m3_water" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/Ca_c_mol_m3_water/16800</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="Ca_c_mol_m3_water" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="21000" />
+        <Attribute Name="Ca_c_mol_m3_water" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/Ca_c_mol_m3_water/21000</DataItem>
+        </Attribute>
+      </Grid>
+    </Grid>
+    <Grid Name="Cl_c_mol_m3_water" GridType="Collection" CollectionType="Temporal">
+      <Grid Name="Cl_c_mol_m3_water" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="0" />
+        <Attribute Name="Cl_c_mol_m3_water" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/Cl_c_mol_m3_water/0</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="Cl_c_mol_m3_water" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="4200" />
+        <Attribute Name="Cl_c_mol_m3_water" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/Cl_c_mol_m3_water/4200</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="Cl_c_mol_m3_water" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="8400" />
+        <Attribute Name="Cl_c_mol_m3_water" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/Cl_c_mol_m3_water/8400</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="Cl_c_mol_m3_water" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="12600" />
+        <Attribute Name="Cl_c_mol_m3_water" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/Cl_c_mol_m3_water/12600</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="Cl_c_mol_m3_water" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="16800" />
+        <Attribute Name="Cl_c_mol_m3_water" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/Cl_c_mol_m3_water/16800</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="Cl_c_mol_m3_water" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="21000" />
+        <Attribute Name="Cl_c_mol_m3_water" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/Cl_c_mol_m3_water/21000</DataItem>
+        </Attribute>
+      </Grid>
+    </Grid>
+    <Grid Name="H_c_mol_m3_water" GridType="Collection" CollectionType="Temporal">
+      <Grid Name="H_c_mol_m3_water" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="0" />
+        <Attribute Name="H_c_mol_m3_water" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/H_c_mol_m3_water/0</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="H_c_mol_m3_water" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="4200" />
+        <Attribute Name="H_c_mol_m3_water" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/H_c_mol_m3_water/4200</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="H_c_mol_m3_water" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="8400" />
+        <Attribute Name="H_c_mol_m3_water" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/H_c_mol_m3_water/8400</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="H_c_mol_m3_water" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="12600" />
+        <Attribute Name="H_c_mol_m3_water" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/H_c_mol_m3_water/12600</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="H_c_mol_m3_water" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="16800" />
+        <Attribute Name="H_c_mol_m3_water" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/H_c_mol_m3_water/16800</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="H_c_mol_m3_water" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="21000" />
+        <Attribute Name="H_c_mol_m3_water" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/H_c_mol_m3_water/21000</DataItem>
+        </Attribute>
+      </Grid>
+    </Grid>
+    <Grid Name="Mg_c_mol_m3_water" GridType="Collection" CollectionType="Temporal">
+      <Grid Name="Mg_c_mol_m3_water" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="0" />
+        <Attribute Name="Mg_c_mol_m3_water" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/Mg_c_mol_m3_water/0</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="Mg_c_mol_m3_water" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="4200" />
+        <Attribute Name="Mg_c_mol_m3_water" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/Mg_c_mol_m3_water/4200</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="Mg_c_mol_m3_water" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="8400" />
+        <Attribute Name="Mg_c_mol_m3_water" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/Mg_c_mol_m3_water/8400</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="Mg_c_mol_m3_water" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="12600" />
+        <Attribute Name="Mg_c_mol_m3_water" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/Mg_c_mol_m3_water/12600</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="Mg_c_mol_m3_water" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="16800" />
+        <Attribute Name="Mg_c_mol_m3_water" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/Mg_c_mol_m3_water/16800</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="Mg_c_mol_m3_water" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="21000" />
+        <Attribute Name="Mg_c_mol_m3_water" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/Mg_c_mol_m3_water/21000</DataItem>
+        </Attribute>
+      </Grid>
+    </Grid>
+    <Grid Name="phi" GridType="Collection" CollectionType="Temporal">
+      <Grid Name="phi" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="0" />
+        <Attribute Name="phi" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/phi/0</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="phi" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="4200" />
+        <Attribute Name="phi" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/phi/4200</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="phi" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="8400" />
+        <Attribute Name="phi" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/phi/8400</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="phi" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="12600" />
+        <Attribute Name="phi" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/phi/12600</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="phi" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="16800" />
+        <Attribute Name="phi" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/phi/16800</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="phi" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="21000" />
+        <Attribute Name="phi" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/phi/21000</DataItem>
+        </Attribute>
+      </Grid>
+    </Grid>
+    <Grid Name="De" GridType="Collection" CollectionType="Temporal">
+      <Grid Name="De" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="0" />
+        <Attribute Name="De" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/De/0</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="De" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="4200" />
+        <Attribute Name="De" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/De/4200</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="De" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="8400" />
+        <Attribute Name="De" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/De/8400</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="De" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="12600" />
+        <Attribute Name="De" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/De/12600</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="De" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="16800" />
+        <Attribute Name="De" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/De/16800</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="De" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="21000" />
+        <Attribute Name="De" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/De/21000</DataItem>
+        </Attribute>
+      </Grid>
+    </Grid>
+    <Grid Name="pH" GridType="Collection" CollectionType="Temporal">
+      <Grid Name="pH" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="0" />
+        <Attribute Name="pH" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/pH/0</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="pH" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="4200" />
+        <Attribute Name="pH" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/pH/4200</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="pH" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="8400" />
+        <Attribute Name="pH" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/pH/8400</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="pH" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="12600" />
+        <Attribute Name="pH" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/pH/12600</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="pH" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="16800" />
+        <Attribute Name="pH" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/pH/16800</DataItem>
+        </Attribute>
+      </Grid>
+      <Grid Name="pH" GridType="Uniform">
+        <xi:include xpointer="xpointer(/Xdmf/Domain/Grid[@GridType='Uniform'][1]/*[self::Topology or self::Geometry])" />
+        <Time Value="21000" />
+        <Attribute Name="pH" AttributeType="Scalar" Center="Cell">
+          <DataItem Dimensions="1000 1" Format="HDF">fields.h5:/Function/pH/21000</DataItem>
+        </Attribute>
+      </Grid>
+    </Grid>
+  </Domain>
+</Xdmf>

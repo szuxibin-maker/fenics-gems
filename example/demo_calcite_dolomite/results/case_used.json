@@ -1,0 +1,78 @@
+{
+  "chemistry": {
+    "project": "/mnt/c/Users/xi_b/3D Objects/suduko/GEMS-FENICSX/FEniCSx_GEMS_Beginner/exsample/demo_bench5/chemistry_data/ic-independent-dat.lst",
+    "temperature": 298.15,
+    "pressure": 100000,
+    "aqueous_phase": "aq_gen",
+    "solid_phases": [
+      "Calcite",
+      "Dolomite-dis"
+    ],
+    "gibbs": {},
+    "initial": {
+      "C": 0.00010461989544030905,
+      "Ca": 0.00010461989544030905,
+      "Cl": 6.381207407155173e-16,
+      "H": 35.421044304502,
+      "Mg": 3.1906037035775866e-16
+    },
+    "inlet": {
+      "C": 1e-09,
+      "Ca": 1e-09,
+      "Cl": 0.00200588998026416,
+      "H": 111.016746657646,
+      "Mg": 0.00100294499013208
+    }
+  },
+  "transport": {
+    "geometry": {
+      "length": 0.5,
+      "cells": 1000
+    },
+    "material": {
+      "phi": 0.32,
+      "De": 6.432e-09,
+      "darcy_flux": 3e-06
+    },
+    "components": [
+      "tracer"
+    ],
+    "initial": {
+      "tracer": 0.0
+    },
+    "boundary": {
+      "left": {
+        "type": "dirichlet",
+        "concentrations": {
+          "tracer": 1.0
+        }
+      },
+      "right": {
+        "type": "outflow",
+        "concentrations": {
+          "tracer": 0.0
+        }
+      }
+    },
+    "solver": {
+      "ksp_type": "preonly",
+      "pc_type": "lu",
+      "rtol": 1e-10,
+      "max_iterations": 1000
+    }
+  },
+  "coupling": {
+    "mode": "coupled",
+    "time": {
+      "dt": 200.0,
+      "end": 21000.0
+    },
+    "update_porosity": false,
+    "update_diffusivity": false,
+    "exponent": 2.0
+  },
+  "output": {
+    "folder": "/mnt/c/Users/xi_b/3D Objects/suduko/GEMS-FENICSX/FEniCSx_GEMS_Beginner/exsample/demo_bench5/results",
+    "every": 21
+  }
+}
